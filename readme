@@ -2,3 +2,7 @@ node.js(express.js framework) DB
 react js html css 
 
 collaboration workflow: github pull request. Peter said this is requiered.
+
+
+npm install 
+npm start
