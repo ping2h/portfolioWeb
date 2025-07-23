@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>💼 Portfolio</h2>
+    <nav>
+      <a href="#">Dashboard</a>
+      <a href="#">Assets</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+    </nav>
+  </div>
+
+  <div class="main">
+    <h1>📊 Portfolio Dashboard</h1>
+
+    <div class="grid">
+      <div class="card form">
+        <h3>Add Asset</h3>
+        <select id="type">
+          <option value="Stock">📈 Stock</option>
+          <option value="Bond">💵 Bond</option>
+          <option value="Cash">💰 Cash</option>
+        </select>
+        <input type="text" id="name" placeholder="Asset Name (e.g. AAPL)" />
+        <input type="number" id="amount" placeholder="Amount (USD)" />
+        <button onclick="addAsset()">Add Asset</button>
+      </div>
+
+      <div class="card">
+        <h3>Asset Distribution</h3>
+        <canvas id="portfolioChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Current Holdings</h3>
+      <table id="portfolio-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="total" id="total-value">Total Portfolio Value: $0</div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
