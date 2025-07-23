@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --main-bg: #f8f9fb;
+      --card-bg: #ffffff;
+      --primary: #2d3e50;
+      --accent: #3498db;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--main-bg);
+      color: var(--primary);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 200px;
+      background: #2d3e50;
+      color: #fff;
+      padding: 30px 20px;
+      flex-shrink: 0;
+    }
+
+    .sidebar h2 {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+
+    .sidebar nav a {
+      display: block;
+      margin: 10px 0;
+      text-decoration: none;
+      color: #bdc3c7;
+    }
+
+    .sidebar nav a:hover {
+      color: #fff;
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 30px;
+    }
+
+    h1 {
+      margin: 0 0 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .form input, .form select, .form button {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+
+    .form button {
+      background: var(--accent);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+
+    .form button:hover {
+      background: #2980b9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+
+    th {
+      background: var(--accent);
+      color: white;
+    }
+
+    .total {
+      margin-top: 12px;
+      font-weight: bold;
+      font-size: 1.1em;
+      text-align: right;
+    }
+
+    canvas {
+      margin-top: 10px;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>💼 Portfolio</h2>
+    <nav>
+      <a href="#">Dashboard</a>
+      <a href="#">Assets</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+    </nav>
+  </div>
+
+  <div class="main">
+    <h1>📊 Portfolio Dashboard</h1>
+
+    <div class="grid">
+      <div class="card form">
+        <h3>Add Asset</h3>
+        <select id="type">
+          <option value="Stock">📈 Stock</option>
+          <option value="Bond">💵 Bond</option>
+          <option value="Cash">💰 Cash</option>
+        </select>
+        <input type="text" id="name" placeholder="Asset Name (e.g. AAPL)" />
+        <input type="number" id="amount" placeholder="Amount (USD)" />
+        <button onclick="addAsset()">Add Asset</button>
+      </div>
+
+      <div class="card">
+        <h3>Asset Distribution</h3>
+        <canvas id="portfolioChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Current Holdings</h3>
+      <table id="portfolio-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="total" id="total-value">Total Portfolio Value: $0</div>
+    </div>
+  </div>
+
+  <script>
+    const tableBody = document.querySelector("#portfolio-table tbody");
+    const totalValueDisplay = document.getElementById("total-value");
+    let totalValue = 0;
+    const assetData = [];
+
+    const ctx = document.getElementById('portfolioChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: [],
+        datasets: [{
+          data: [],
+          backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#9b59b6'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          }
+        }
+      }
+    });
+
+    function addAsset() {
+      const type = document.getElementById("type").value;
+      const name = document.getElementById("name").value.trim();
+      const amount = parseFloat(document.getElementById("amount").value);
+
+      if (!name || isNaN(amount) || amount <= 0) {
+        alert("Please enter valid asset name and amount.");
+        return;
+      }
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${type}</td>
+        <td>${name}</td>
+        <td>$${amount.toFixed(2)}</td>
+        <td><button onclick="removeAsset(this, '${name}', ${amount})">🗑️</button></td>
+      `;
+      tableBody.appendChild(row);
+
+      assetData.push({ name, amount });
+      totalValue += amount;
+      updateTotal();
+      updateChart();
+
+      document.getElementById("name").value = "";
+      document.getElementById("amount").value = "";
+    }
+
+    function removeAsset(button, name, amount) {
+      const row = button.closest("tr");
+      tableBody.removeChild(row);
+      totalValue -= amount;
+
+      const index = assetData.findIndex(a => a.name === name && a.amount === amount);
+      if (index !== -1) assetData.splice(index, 1);
+
+      updateTotal();
+      updateChart();
+    }
+
+    function updateTotal() {
+      totalValueDisplay.textContent = `Total Portfolio Value: $${totalValue.toFixed(2)}`;
+    }
+
+    function updateChart() {
+      chart.data.labels = assetData.map(a => a.name);
+      chart.data.datasets[0].data = assetData.map(a => a.amount);
+      chart.update();
+    }
+  </script>
+</body>
+</html>
