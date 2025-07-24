@@ -1,4 +1,4 @@
-// index.js
+
 import express from 'express';
 import userRoutes from './src/routes/users.js'; 
 import path from 'path';
