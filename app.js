@@ -36,6 +36,11 @@ app.get('/position', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'positions.html'));
 });
 
+app.get('/dashboard', (req, res) => {
+  console.log('Request received for root path');
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
 app.use('/users', userRoutes);
 
 
