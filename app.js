@@ -45,7 +45,7 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-app.use('/users', userRoutes);
+
 app.use('/accounts', accountRouter);
 
 
