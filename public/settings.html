@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Settings</title>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Portfolio Management</a>
+      <div class="navbar-nav">
+        <a class="nav-link" href="cash.html">Cash</a>
+        <a class="nav-link" href="bonds.html">Bonds</a>
+        <a class="nav-link" href="stocks.html">Stocks</a>
+        <a class="nav-link" href="transactions.html">Transactions</a>
+        <a class="nav-link active" href="settings.html">Settings</a> <!-- 当前页高亮 -->
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <h2>Settings</h2>
+
+    <!-- 数据管理 -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-database me-2"></i>Data Management</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <button class="btn btn-danger" id="clearAllData">
+            <i class="fas fa-trash-alt me-1"></i> Clear All Data
+          </button>
+          <small class="text-muted ms-2">Delete all transactions, stocks, bonds and cash records</small>
+        </div>
+        <div class="mb-3">
+          <button class="btn btn-success" id="exportData">
+            <i class="fas fa-download me-1"></i> Export Data
+          </button>
+          <small class="text-muted ms-2">Save all data as JSON file</small>
+        </div>
+        <div>
+          <label class="btn btn-info" for="importData">
+            <i class="fas fa-upload me-1"></i> Import Data
+          </label>
+          <input type="file" id="importData" accept=".json" style="display: none;">
+          <small class="text-muted ms-2">Restore data from JSON file</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- 界面设置 -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-paint-brush me-2"></i>Interface Preferences</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label">Theme</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="theme" id="lightTheme" value="light" checked>
+            <label class="form-check-label" for="lightTheme">Light Mode</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="theme" id="darkTheme" value="dark">
+            <label class="form-check-label" for="darkTheme">Dark Mode</label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="defaultPage" class="form-label">Default Landing Page</label>
+          <select class="form-select" id="defaultPage">
+            <option value="index.html">Dashboard</option>
+            <option value="cash.html">Cash</option>
+            <option value="stocks.html">Stocks</option>
+            <option value="bonds.html">Bonds</option>
+            <option value="transactions.html">Transactions</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 账户设置 -->
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-user me-2"></i>Account Settings</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="userName" class="form-label">Display Name</label>
+          <input type="text" class="form-control" id="userName" placeholder="Your name">
+        </div>
+        <div class="mb-3">
+          <label for="riskPreference" class="form-label">Investment Risk Preference</label>
+          <select class="form-select" id="riskPreference">
+            <option value="conservative">Conservative (低风险)</option>
+            <option value="balanced" selected>Balanced (平衡)</option>
+            <option value="aggressive">Aggressive (高风险)</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="saveAccountSettings">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./js/settings.js"></script>
+</body>
+</html>
+    

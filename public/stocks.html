@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+
+    <style>
+        /* 深色模式样式 */
+        body.bg-dark { 
+          background-color: #343a40 !important; 
+          color: #ffffff !important; 
+        }
+        
+        /* 深色模式下的卡片样式 */
+        body.bg-dark .card {
+            background-color: #454d55;
+            border-color: #6c757d;
+        }
+        
+        body.bg-dark .card-header {
+            background-color: #343a40;
+            border-color: #6c757d;
+        }
+        
+        /* 深色模式侧边栏样式 */
+        body.bg-dark .sidebar {
+            background-color: #212529 !important;
+            color: #ffffff !important;
+        }
+        
+        body.bg-dark .sidebar .nav-item {
+            color: #ffffff !important;
+        }
+        
+        body.bg-dark .sidebar .nav-item.bg-primary\/5 {
+            background-color: rgba(22, 93, 255, 0.2) !important;
+        }
+        
+        body.bg-dark .sidebar .logo {
+            border-bottom-color: #454d55 !important;
+        }
+        
+        body.bg-dark .sidebar a.nav-item {
+            color: #ffffff !important;
+        }
+        
+        body.bg-dark .sidebar a.nav-item:hover {
+            background-color: #343a40 !important;
+        }
+
+        /* 全局基础样式 */
+        :root {
+            --primary-color: #165DFF;
+            --text-primary: #1D2129;
+            --text-secondary: #4E5969;
+            --bg-light: #F2F3F5;
+            --bg-white: #FFFFFF;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --success: #00B42A;
+            --danger: #F53F3F;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin: 0;
+        }
+        
+        .container-fluid {
+            padding: 0;
+        }
+        
+        .sidebar {
+            background-color: var(--bg-white);
+            box-shadow: var(--card-shadow);
+            height: 100vh;
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+        }
+        
+        .main-content {
+            padding: 1.5rem;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .card {
+            background-color: var(--bg-white);
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--bg-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .card-body { 
+            padding: 1.25rem;
+        }
+        
+        /* 股票页面特有样式 */
+        .btn-add {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .records-table th,
+        .records-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--bg-light);
+        }
+        
+        .records-table th {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            margin: 0 0.25rem;
+        }
+        
+        .price-up {
+            color: var(--success);
+        }
+        
+        .price-down {
+            color: var(--danger);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏（导航） -->
+            <div class="col-md-3 sidebar">
+                <div class="logo d-flex align-items-center gap-2 p-3 border-bottom">
+                    <i class="fas fa-university fa-2x text-primary-color"></i>
+                    <h1 class="h5 m-0">Portfolio Pro</h1>
+                </div>
+                
+                <a href="index.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="cash.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
+                    <i class="fas fa-wallet"></i>
+                    <span>Cash</span>
+                </a>
+                <a href="stocks.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none bg-primary/5 text-primary-color">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Stocks</span>
+                </a>
+                <a href="bonds.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
+                    <i class="fas fa-certificate"></i>
+                    <span>Bonds</span>
+                </a>
+                <a href="transactions.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="settings.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+            
+            <!-- 股票主内容 -->
+            <div class="col-md-9 main-content">
+                <div class="header">
+                    <h2 class="page-title">Stock Portfolio</h2>
+                    <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                        <i class="fas fa-plus"></i> Add New Stock
+                    </button>
+                </div>
+                
+                <!-- 股票列表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Your Stocks</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="records-table">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Name</th>
+                                    <th>Shares</th>
+                                    <th>Purchase Price</th>
+                                    <th>Current Price</th>
+                                    <th>Market Value</th>
+                                    <th>Change</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stocks-table-body">
+                                <!-- 股票数据将通过JS动态加载 -->
+                                <tr>
+                                    <td colspan="8" class="text-center">Loading stocks...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 股票走势图表（选中股票时显示） -->
+                <div class="card" id="stock-chart-card" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title" id="chart-stock-name">Stock Price History</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="stock-price-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加股票的模态框 -->
+    <div class="modal fade" id="addStockModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-stock-form">
+                        <div class="mb-3">
+                            <label for="stock-symbol" class="form-label">Ticker Symbol *</label>
+                            <input type="text" class="form-control" id="stock-symbol" placeholder="e.g. AAPL" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="stock-name" class="form-label">Company Name *</label>
+                            <input type="text" class="form-control" id="stock-name" placeholder="e.g. Apple Inc." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="stock-shares" class="form-label">Number of Shares *</label>
+                            <input type="number" class="form-control" id="stock-shares" min="1" step="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="stock-purchase-price" class="form-label">Purchase Price ($) *</label>
+                            <input type="number" class="form-control" id="stock-purchase-price" min="0.01" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="stock-purchase-date" class="form-label">Purchase Date</label>
+                            <input type="date" class="form-control" id="stock-purchase-date">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-stock">Save Stock</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 主题切换逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('appTheme') || 'light';
+            applyTheme(savedTheme);
+        });
+
+        function applyTheme(theme) {
+            document.body.className = theme === 'dark' ? 'bg-dark text-white' : '';
+        }
+
+        // 股票数据逻辑
+        const API_URL = 'http://localhost:3001/api/stocks';
+        let stockChart = null; // 图表实例
+
+        // 页面加载时加载股票数据
+        window.addEventListener('load', loadStocks);
+
+        // 保存股票按钮事件
+        document.getElementById('save-stock').addEventListener('click', saveNewStock);
+
+        // 加载股票数据
+        async function loadStocks() {
+            try {
+                // 开发阶段：用localStorage模拟
+                const storedStocks = localStorage.getItem('stocks');
+                const stocks = storedStocks ? JSON.parse(storedStocks) : getMockStocks();
+                
+                renderStocksTable(stocks);
+            } catch (error) {
+                console.error('加载股票数据失败:', error);
+                document.getElementById('stocks-table-body').innerHTML = 
+                    '<tr><td colspan="8" class="text-center text-danger">Failed to load stocks</td></tr>';
+            }
+        }
+
+        // 渲染股票表格
+        function renderStocksTable(stocks) {
+            const tableBody = document.getElementById('stocks-table-body');
+            tableBody.innerHTML = '';
+
+            if (stocks.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" class="text-center">No stocks found</td></tr>';
+                return;
+            }
+
+            stocks.forEach(stock => {
+                // 计算衍生数据
+                const marketValue = (stock.currentPrice * stock.shares).toFixed(2);
+                const change = ((stock.currentPrice - stock.purchasePrice) / stock.purchasePrice * 100).toFixed(2);
+                const changeClass = change >= 0 ? 'price-up' : 'price-down';
+                const changeIcon = change >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${stock.symbol}</td>
+                    <td>${stock.name}</td>
+                    <td>${stock.shares}</td>
+                    <td>$${parseFloat(stock.purchasePrice).toFixed(2)}</td>
+                    <td>$${parseFloat(stock.currentPrice).toFixed(2)}</td>
+                    <td>$${marketValue}</td>
+                    <td class="${changeClass}">
+                        <i class="${changeIcon}"></i> ${change}%
+                    </td>
+                    <td>
+                        <button class="action-btn" onclick="showStockChart('${stock.symbol}', '${stock.name}')">
+                            <i class="fas fa-chart-line text-primary"></i>
+                        </button>
+                        <button class="action-btn" onclick="editStock(${stock.id})">
+                            <i class="fas fa-edit text-secondary"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 保存新股票
+        function saveNewStock() {
+            const form = document.getElementById('add-stock-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // 获取表单数据
+            const newStock = {
+                id: Date.now(), // 临时ID
+                symbol: document.getElementById('stock-symbol').value.toUpperCase(),
+                name: document.getElementById('stock-name').value,
+                shares: parseInt(document.getElementById('stock-shares').value),
+                purchasePrice: parseFloat(document.getElementById('stock-purchase-price').value),
+                purchaseDate: document.getElementById('stock-purchase-date').value || new Date().toISOString().split('T')[0],
+                currentPrice: calculateRandomPrice(parseFloat(document.getElementById('stock-purchase-price').value)) // 模拟当前价格
+            };
+
+            // 保存到localStorage
+            const existingStocks = JSON.parse(localStorage.getItem('stocks') || '[]');
+            existingStocks.push(newStock);
+            localStorage.setItem('stocks', JSON.stringify(existingStocks));
+
+            // 刷新表格
+            loadStocks();
+
+            // 关闭模态框并重置表单
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addStockModal'));
+            modal.hide();
+            form.reset();
+
+            alert('Stock added successfully!');
+        }
+
+        // 显示股票走势图
+        function showStockChart(symbol, name) {
+            // 显示图表卡片
+            document.getElementById('stock-chart-card').style.display = 'block';
+            document.getElementById('chart-stock-name').textContent = `${name} (${symbol}) Price History`;
+
+            // 生成模拟的价格历史数据
+            const labels = Array.from({length: 30}, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() - (29 - i));
+                return date.toLocaleDateString();
+            });
+
+            const basePrice = 100 + Math.random() * 200; // 基础价格
+            const data = labels.map((_, i) => {
+                // 模拟价格波动
+                return basePrice + (Math.random() * 20 - 10) + (i * 0.5);
+            });
+
+            // 销毁旧图表
+            if (stockChart) stockChart.destroy();
+
+            // 创建新图表
+            const ctx = document.getElementById('stock-price-chart').getContext('2d');
+            stockChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Price ($)',
+                        data: data,
+                        borderColor: '#165DFF',
+                        backgroundColor: 'rgba(22, 93, 255, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: value => `$${value.toFixed(2)}`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 辅助函数：生成模拟当前价格（基于买入价上下浮动）
+        function calculateRandomPrice(purchasePrice) {
+            const fluctuation = purchasePrice * (0.1 * Math.random() - 0.05); // ±5% 波动
+            return (purchasePrice + fluctuation).toFixed(2);
+        }
+
+        // 辅助函数：生成模拟股票数据
+        function getMockStocks() {
+            return [
+                {
+                    id: 1,
+                    symbol: 'AAPL',
+                    name: 'Apple Inc.',
+                    shares: 10,
+                    purchasePrice: 170.50,
+                    purchaseDate: '2023-01-15',
+                    currentPrice: 182.35
+                },
+                {
+                    id: 2,
+                    symbol: 'MSFT',
+                    name: 'Microsoft Corp',
+                    shares: 5,
+                    purchasePrice: 280.25,
+                    purchaseDate: '2023-02-20',
+                    currentPrice: 320.75
+                },
+                {
+                    id: 3,
+                    symbol: 'GOOGL',
+                    name: 'Alphabet Inc.',
+                    shares: 8,
+                    purchasePrice: 135.00,
+                    purchaseDate: '2023-03-10',
+                    currentPrice: 128.50
+                }
+            ];
+        }
+
+        // 编辑股票（预留方法）
+        function editStock(stockId) {
+            alert(`Edit stock with ID: ${stockId} (功能待实现)`);
+            // 实际实现时：获取股票数据，填充到表单，修改后保存
+        }
+    </script>
+    <script src="./js/stocks.js"></script>
+</body>
+</html>
