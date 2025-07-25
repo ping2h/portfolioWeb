@@ -5,4 +5,9 @@ collaboration workflow: github pull request. Peter said this is requiered.
 
 
 npm install 
+
+//dev start, using nodemon
+npm run dev 
+
+//prod start 
 npm start

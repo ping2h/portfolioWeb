@@ -1,4 +1,4 @@
-// index.js
+
 import express from 'express';
 import userRoutes from './src/routes/users.js'; 
 import path from 'path';
@@ -17,9 +17,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.get('/', (req, res) => {
+  console.log('Request received for root path');
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/trade', (req, res) => {
+  console.log('Request received for root path');
+  res.sendFile(path.join(__dirname, 'public', 'trade.html'));
+});
+
+app.get('/account', (req, res) => {
+  console.log('Request received for root path');
+  res.sendFile(path.join(__dirname, 'public', 'account.html'));
+});
+
+app.get('/position', (req, res) => {
+  console.log('Request received for root path');
+  res.sendFile(path.join(__dirname, 'public', 'positions.html'));
+});
 
 app.use('/users', userRoutes);
 

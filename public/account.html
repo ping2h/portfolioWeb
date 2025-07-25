@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UPBroker</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+    <!-- Bootstrap navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">UPBroker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search stocks" aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">Search</button>
+                </form>
+                <ul class="navbar-nav me-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="trade">Trade</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="positions">Positions</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Account
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="/trade">Deposit</a></li>
+                            <li><a class="dropdown-item" href="/trade">Withdraw</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Logout</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Bootstrap navbar -->
+
+    <div class="container mt-5">
+        <div class="mx-auto" style="max-width: 66%;">
+            <div class="d-flex justify-content-between mb-3">
+                <h3>Account Overview</h3>
+                <a href="trade.html" class="btn btn-primary">Go to Trade</a>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-body">
+                    <p><strong>Username:</strong> johndoe</p>
+                    <p><strong>Join Date:</strong> 2023-05-10</p>
+                    <p><strong>Account Balance:</strong> $52,400.00</p>
+                    <p><strong>Total Return:</strong> +8.25%</p>
+                    <button class="btn btn-outline-secondary">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Main Account Content -->
+        <div class="container my-5 d-flex justify-content-center">
+            <div class="w-75">
+                <h3 class="mb-4 text-center">Deposit/Withdraw</h3>
+
+                <!-- Deposit Form -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">Deposit Funds</div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="depositAmount" class="form-label">Amount</label>
+                                <input type="number" class="form-control" id="depositAmount"
+                                    placeholder="Enter amount to deposit">
+                            </div>
+                            <button type="submit" class="btn btn-success">Deposit</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Withdraw Form -->
+                <div class="card">
+                    <div class="card-header bg-danger text-white">Withdraw Funds</div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="withdrawAmount" class="form-label">Amount</label>
+                                <input type="number" class="form-control" id="withdrawAmount"
+                                    placeholder="Enter amount to withdraw">
+                            </div>
+                            <button type="submit" class="btn btn-danger">Withdraw</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+
+</html>
