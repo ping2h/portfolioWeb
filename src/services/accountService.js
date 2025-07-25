@@ -16,6 +16,7 @@ class AccountService {
   loadAccounts() {
     const raw = readFileSync(dataPath);
     const data = JSON.parse(raw);
+    console.log(data);
     return data.map(d => new Account(d.id, d.username, d.balance));
   }
 
@@ -30,6 +31,7 @@ class AccountService {
 
   deposit(id, amount) {
     const acc = this.findById(id);
+    console.log(acc);
     if (!acc) throw new Error("Not found");
     acc.deposit(amount);
     this.saveAccounts();
