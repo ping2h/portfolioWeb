@@ -1,6 +1,9 @@
 
 import express from 'express';
-import userRoutes from './src/routes/users.js'; 
+
+
+
+import accountRouter from './src/routes/accountRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -36,7 +39,7 @@ app.get('/position', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'positions.html'));
 });
 
-app.use('/users', userRoutes);
+app.use('/accounts', accountRouter);
 
 
 app.listen(PORT, () => {
