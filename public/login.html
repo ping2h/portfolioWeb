@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: #0a0a0a url('https://www.10wallpaper.com/wallpaper/1366x768/2407/Modern_City_Night_Skyscrapers_Horizon_Dusk_5K_1366x768.jpg')
+        no-repeat center/cover;
+      opacity: 0;
+      animation: fadein-bg 0.8s forwards;
+    }
+    @keyframes fadein-bg {
+      to { opacity: 1; }
+    }
+    .animate-fade-in {
+      animation: fade-in-card 0.8s ease-out;
+    }
+    @keyframes fade-in-card {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen font-sans">
+
+  <div class="w-full max-w-md bg-gray-900/70 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-gray-700 animate-fade-in">
+    <h2 class="text-3xl font-bold text-white mb-6 text-center">Welcome Back</h2>
+    <p class="text-gray-400 text-sm mb-8 text-center">Please sign in to continue</p>
+    <!--welcome -->
+
+    
+    <!-- Login Form and go to index page -->
+    <form class="space-y-5" action="index.html" method="get">
+      <div>
+        <label for="email" class="text-gray-300 text-sm mb-2 block">Email</label>
+        <input id="email" type="email" placeholder="you@example.com"
+               class="w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+      </div>
+      <div>
+        <label for="password" class="text-gray-300 text-sm mb-2 block">Password</label>
+        <input id="password" type="password" placeholder="••••••••"
+               class="w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+      </div>
+      <div class="flex items-center justify-between text-sm text-gray-400">
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" class="accent-purple-500"/> <span>Remember me</span>
+        </label>
+        <a href="#" class="text-purple-400 hover:text-purple-300">Forgot Password?</a>
+      </div>
+      <button type="submit"
+              class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 rounded-lg font-medium transition duration-200 shadow-lg hover:shadow-purple-500/40">
+        Sign In
+      </button>
+    </form>
+
+    <div class="flex items-center my-6">
+      <hr class="flex-grow border-gray-700"/>
+      <span class="mx-3 text-gray-400 text-sm">OR</span>
+      <hr class="flex-grow border-gray-700"/>
+    </div>
+    <button class="w-full bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-lg font-medium flex items-center justify-center space-x-2">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google"/>
+      <span>Sign in with Google</span>
+    </button>
+    <p class="text-center text-gray-400 text-sm mt-6">
+      Don't have an account?
+      <a href="#" class="text-purple-400 hover:text-purple-300">Sign up</a>
+    </p>
+  </div>
+</body>
+</html>
