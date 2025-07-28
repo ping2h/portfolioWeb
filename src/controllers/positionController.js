@@ -27,3 +27,27 @@ export const getPositionByType = async (req, res) => {
     }
 };
 
+// 购买某个position
+export const buyPosition = async (req, res) => {
+    try {
+        const type = Number(req.params.type);
+        const { symbol, shares } = req.body;
+        const result = await positionService.buyPosition(type, symbol, shares);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+// 出售某个position
+export const sellPosition = async (req, res) => {
+    try {
+        const type = Number(req.params.type);
+        const { symbol, shares } = req.body;
+        const result = await positionService.sellPosition(type, symbol, shares);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
