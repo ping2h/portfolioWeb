@@ -115,6 +115,7 @@ const sellPosition = async (type, symbol, shares) => {
     }
 };
 
+//某类资产最新的总价值
 const getTotalPositionType = async (type) => {
     try {
         let sql = '';
@@ -134,6 +135,38 @@ const getTotalPositionType = async (type) => {
     }
 };
 
+
+
+const updatePositionPrice = async (type, symbol, current_price) => {
+    const conn = connection;
+    try {
+        if (typeof current_price !== 'number' || current_price <= 0) {
+            throw new Error('Invalid current_price: must be a positive number');
+        }
+        // 更新position表中的当前价格
+        const [result] = await conn.query(
+            'UPDATE position SET current_price = ? WHERE type = ? AND symbol = ?',
+            [current_price, type, symbol]
+        );
+        if (result.affectedRows === 0) throw new Error('Asset not found');
+        // 重新计算各类资产总额
+        const stock_value = await getTotalPositionType(0);
+        const bond_value = await getTotalPositionType(1);
+        const crypto_value = await getTotalPositionType(2);
+        // 查询当前现金
+        const [assets] = await conn.query('SELECT cash FROM asset ORDER BY id DESC LIMIT 1');
+        const cash = assets.length > 0 ? parseFloat(assets[0].cash) : 0;
+        // 插入asset表
+        await conn.query(
+            `INSERT INTO asset (cash, stock_value, bond_value, crypto_value) VALUES (?, ?, ?, ?)`,
+            [cash, stock_value, bond_value, crypto_value]
+        );
+        return { success: true, stock_value, bond_value, crypto_value };
+    } catch (error) {
+        throw new Error('Update price failed: ' + error.message);
+    }
+};
+
 export default {
     getAll,
     getStock,
@@ -142,4 +175,5 @@ export default {
     getTotalPositionType,
     buyPosition,
     sellPosition,
+    updatePositionPrice,
 };
