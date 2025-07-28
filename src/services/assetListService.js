@@ -3,7 +3,9 @@ import connection from '../db/db.js';
 
 const getAssetList = async () => {
     try {
-        const [data] = await connection.query('SELECT symbol, name, type FROM assetList');
+        const [data] = await connection.query('SELECT * FROM assetList');
+        // dev 
+        console.log('getAssetList :', data);
         return data;
     } catch (error) {
         throw new Error('Database query failed(getAssetList): ' + error.message);
