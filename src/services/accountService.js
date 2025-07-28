@@ -16,7 +16,6 @@ class AccountService {
   loadAccounts() {
     const raw = readFileSync(dataPath);
     const data = JSON.parse(raw);
-    console.log(data);
     return data.map(d => new Account(d.id, d.username, d.balance));
   }
 
