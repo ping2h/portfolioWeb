@@ -3,159 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Portfolio</title>
+    <title>Stocks | Portfolio Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
-        /* 深色模式样式 */
-        body.bg-dark { 
-          background-color: #343a40 !important; 
-          color: #ffffff !important; 
-        }
-        
-        /* 深色模式下的卡片样式 */
-        body.bg-dark .card {
-            background-color: #454d55;
-            border-color: #6c757d;
-        }
-        
-        body.bg-dark .card-header {
-            background-color: #343a40;
-            border-color: #6c757d;
-        }
-        
-        /* 深色模式侧边栏样式 */
-        body.bg-dark .sidebar {
-            background-color: #212529 !important;
-            color: #ffffff !important;
-        }
-        
-        body.bg-dark .sidebar .nav-item {
-            color: #ffffff !important;
-        }
-        
-        body.bg-dark .sidebar .nav-item.bg-primary\/5 {
-            background-color: rgba(22, 93, 255, 0.2) !important;
-        }
-        
-        body.bg-dark .sidebar .logo {
-            border-bottom-color: #454d55 !important;
-        }
-        
-        body.bg-dark .sidebar a.nav-item {
-            color: #ffffff !important;
-        }
-        
-        body.bg-dark .sidebar a.nav-item:hover {
-            background-color: #343a40 !important;
-        }
-
-        /* 全局基础样式 */
         :root {
-            --primary-color: #165DFF;
-            --text-primary: #1D2129;
-            --text-secondary: #4E5969;
-            --bg-light: #F2F3F5;
+            /* Fund market color standards */
+            --up-color: #F53F3F;    /* Red for up */
+            --down-color: #00B42A;  /* Green for down */
+            --primary-color: #a8d5e2;
+            
+            /* Navigation variables */
+            --top-nav-gray: #353a3e;
+            --nav-text: #E5E7EB;
+            --nav-text-hover: #FFFFFF;
+            --dropdown-bg: #FFFFFF;
+            --dropdown-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            
+            /* Page base variables */
+            --bg-light: #F9F9F9;
             --bg-white: #FFFFFF;
-            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --success: #00B42A;
-            --danger: #F53F3F;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --border-light: #f0f0f0;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
         }
         
-        body {
-            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-primary);
-            line-height: 1.5;
+        * {
+            box-sizing: border-box;
             margin: 0;
-        }
-        
-        .container-fluid {
             padding: 0;
         }
         
-        .sidebar {
-            background-color: var(--bg-white);
-            box-shadow: var(--card-shadow);
-            height: 100vh;
-            padding: 1.5rem 0;
-            position: sticky;
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            padding-top: 60px;
+            line-height: 1.5;
+        }
+        
+        /* Top navigation bar */
+        .top-nav {
+            background-color: var(--top-nav-gray);
+            padding: 0 1.5rem;
+            position: fixed;
             top: 0;
-        }
-        
-        .main-content {
-            padding: 1.5rem;
-        }
-        
-        .header {
+            left: 0;
+            right: 0;
+            z-index: 1000;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            justify-content: space-between;
+            height: 60px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--nav-text-hover);
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin: 0 0.5rem;
+            flex: 1;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .nav-links::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .nav-item {
+            padding: 0.5rem 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--nav-text);
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--nav-text-hover);
+        }
+        
+        /* User menu */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            width: 180px;
+            background-color: var(--dropdown-bg);
+            border-radius: 6px;
+            box-shadow: var(--dropdown-shadow);
+            list-style: none;
+            padding: 0.5rem 0;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(5px);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+        
+        .user-menu:hover .user-dropdown {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .user-dropdown::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: 12px;
+            width: 10px;
+            height: 10px;
+            background-color: var(--dropdown-bg);
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .user-dropdown li a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .user-dropdown li a:hover {
+            background-color: var(--bg-light);
+        }
+        
+        /* Main content area */
+        .container {
+            max-width: 1200px;
+            margin: 1.25rem auto;
+            padding: 0 1rem;
         }
         
         .page-title {
-            font-size: 1.75rem;
+            font-size: 1.6rem;
             font-weight: 600;
-            margin: 0;
+            margin-bottom: 1rem;
         }
         
+        /* Info cards */
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: 1rem;
+        }
+        
+        .info-card {
+            background-color: var(--bg-white);
+            border-radius: 6px;
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .info-card-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-card-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .info-card-trend {
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .trend-up {
+            color: var(--up-color);
+        }
+        
+        .trend-down {
+            color: var(--down-color);
+        }
+        
+        /* Card styles */
         .card {
             background-color: var(--bg-white);
-            border-radius: 8px;
+            border-radius: 6px;
             box-shadow: var(--card-shadow);
-            border: none;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
         }
         
         .card-header {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--bg-light);
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-light);
+            font-weight: 600;
+            font-size: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        .card-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin: 0;
+        .card-body {
+            padding: 1rem;
         }
         
-        .card-body { 
-            padding: 1.25rem;
-        }
-        
-        /* 股票页面特有样式 */
+        /* Button styles */
         .btn-add {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--text-primary);
             border: none;
-            padding: 0.5rem 1rem;
+            padding: 0.65rem 1rem;
             border-radius: 4px;
+            font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
         }
         
-        .records-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .records-table th,
-        .records-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--bg-light);
-        }
-        
-        .records-table th {
-            font-weight: 600;
-            color: var(--text-secondary);
+        .btn-add:hover {
+            background-color: #95c8d8;
         }
         
         .action-btn {
@@ -164,118 +280,218 @@
             cursor: pointer;
             padding: 0.25rem 0.5rem;
             margin: 0 0.25rem;
+            color: var(--text-secondary);
         }
         
+        .action-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        /* Table styles */
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+        
+        .records-table th,
+        .records-table td {
+            padding: 0.65rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9rem;
+        }
+        
+        .records-table th {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .records-table tbody tr.selected {
+            background-color: rgba(168, 213, 226, 0.1);
+        }
+        
+        /* Stock specific styles */
         .price-up {
-            color: var(--success);
+            color: var(--up-color);
+            font-weight: 500;
         }
         
         .price-down {
-            color: var(--danger);
+            color: var(--down-color);
+            font-weight: 500;
         }
         
         .chart-container {
-            height: 300px;
-            margin-top: 1rem;
+            height: 280px;
+            width: 100%;
+        }
+        
+        /* Date picker adjustments */
+        .flatpickr-input {
+            width: 100%;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .info-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .records-table th:nth-child(4),
+            .records-table td:nth-child(4) {
+                display: none;
+            }
+            
+            .chart-container {
+                height: 230px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-item span {
+                display: none;
+            }
+            
+            .nav-item {
+                padding: 0.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- 侧边栏（导航） -->
-            <div class="col-md-3 sidebar">
-                <div class="logo d-flex align-items-center gap-2 p-3 border-bottom">
-                    <i class="fas fa-university fa-2x text-primary-color"></i>
-                    <h1 class="h5 m-0">Portfolio Pro</h1>
-                </div>
-                
-                <a href="index.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="cash.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
-                    <i class="fas fa-wallet"></i>
-                    <span>Cash</span>
-                </a>
-                <a href="stocks.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none bg-primary/5 text-primary-color">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Stocks</span>
-                </a>
-                <a href="bonds.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
-                    <i class="fas fa-certificate"></i>
-                    <span>Bonds</span>
-                </a>
-                <a href="transactions.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Transactions</span>
-                </a>
-                <a href="settings.html" class="nav-item d-flex align-items-center gap-2 p-3 text-decoration-none">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
+    <!-- Top navigation bar -->
+    <div class="top-nav">
+        <div class="logo">
+            <i class="fas fa-university fa-2x" style="color: var(--nav-text-hover);"></i>
+            <h1>Portfolio Pro</h1>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i> <span>Dashboard</span>
+            </a>
+            <a href="cash.html" class="nav-item">
+                <i class="fas fa-wallet"></i> <span>Cash</span>
+            </a>
+            <a href="stocks.html" class="nav-item active">
+                <i class="fas fa-chart-line"></i> <span>Stocks</span>
+            </a>
+            <a href="bonds.html" class="nav-item">
+                <i class="fas fa-certificate"></i> <span>Bonds</span>
+            </a>
+            <a href="transactions.html" class="nav-item">
+                <i class="fas fa-exchange-alt"></i> <span>Transactions</span>
+            </a>
+        </div>
+        
+        <div class="user-menu">
+            <div class="user-avatar" title="John Doe">JD</div>
+            <!-- User dropdown -->
+            <ul class="user-dropdown">
+                <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
+                <li style="border-top: 1px solid var(--border-light); margin-top: 0.2rem;">
+                    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="container">
+        <h1 class="page-title">Stock Portfolio</h1>
+        
+        <!-- Stock overview cards -->
+        <div class="info-cards">
+            <div class="info-card">
+                <div class="info-card-title">Total Stocks</div>
+                <div class="info-card-value">3</div>
             </div>
-            
-            <!-- 股票主内容 -->
-            <div class="col-md-9 main-content">
-                <div class="header">
-                    <h2 class="page-title">Stock Portfolio</h2>
-                    <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addStockModal">
-                        <i class="fas fa-plus"></i> Add New Stock
-                    </button>
+            <div class="info-card">
+                <div class="info-card-title">Total Value</div>
+                <div class="info-card-value">$32,540</div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-title">Total Gain/Loss</div>
+                <div class="info-card-value price-up">+$3,240</div>
+                <div class="info-card-trend trend-up">
+                    <i class="fas fa-arrow-up"></i> 10.9% overall
                 </div>
-                
-                <!-- 股票列表 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Your Stocks</h3>
-                    </div>
-                    <div class="card-body">
-                        <table class="records-table">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th>Name</th>
-                                    <th>Shares</th>
-                                    <th>Purchase Price</th>
-                                    <th>Current Price</th>
-                                    <th>Market Value</th>
-                                    <th>Change</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="stocks-table-body">
-                                <!-- 股票数据将通过JS动态加载 -->
-                                <tr>
-                                    <td colspan="8" class="text-center">Loading stocks...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-title">Day Change</div>
+                <div class="info-card-value price-up">+$425</div>
+                <div class="info-card-trend trend-up">
+                    <i class="fas fa-arrow-up"></i> 1.3% today
                 </div>
-                
-                <!-- 股票走势图表（选中股票时显示） -->
-                <div class="card" id="stock-chart-card" style="display: none;">
-                    <div class="card-header">
-                        <h3 class="card-title" id="chart-stock-name">Stock Price History</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="stock-price-chart"></canvas>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        
+        <!-- Stock list -->
+        <div class="card">
+            <div class="card-header">
+                <span>Your Stocks</span>
+                <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                    <i class="fas fa-plus"></i> Add New Stock
+                </button>
+            </div>
+            <div class="card-body">
+                <table class="records-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Name</th>
+                            <th>Shares</th>
+                            <th>Purchase Price</th>
+                            <th>Current Price</th>
+                            <th>Market Value</th>
+                            <th>Change</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stocks-table-body">
+                        <!-- Stock data will be loaded dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Stock chart -->
+        <div class="card" id="stock-chart-card" style="display: none;">
+            <div class="card-header">
+                <span id="chart-stock-name">Stock Price History</span>
+                <select class="form-control form-control-sm" style="width: auto;" id="chart-period-select" disabled>
+                    <option value="6M" selected>6 Months</option>
+                </select>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="stock-price-chart"></canvas>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- 添加股票的模态框 -->
+    <!-- Add Stock Modal -->
     <div class="modal fade" id="addStockModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Stock</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="add-stock-form">
@@ -297,7 +513,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="stock-purchase-date" class="form-label">Purchase Date</label>
-                            <input type="date" class="form-control" id="stock-purchase-date">
+                            <input type="text" id="stock-purchase-date" placeholder="Select date" required>
                         </div>
                     </form>
                 </div>
@@ -311,42 +527,61 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // 主题切换逻辑
+        // Initialize flatpickr date picker with full English support
         document.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = localStorage.getItem('appTheme') || 'light';
-            applyTheme(savedTheme);
+            // Initialize date picker
+            flatpickr("#stock-purchase-date", {
+                dateFormat: "Y/m/d",
+                altInput: true,
+                altFormat: "F j, Y",
+                locale: {
+                    firstDayOfWeek: 1,
+                    weekdays: {
+                        shorthand: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                        longhand: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+                    },
+                    months: {
+                        shorthand: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                        longhand: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+                    },
+                    rangeSeparator: " to ",
+                    weekAbbreviation: "Wk",
+                    scrollTitle: "Scroll to increment",
+                    toggleTitle: "Click to toggle"
+                },
+                today: "Today",
+                clear: "Clear",
+                allowInput: true
+            });
+
+            // Load stocks data
+            loadStocks();
         });
 
-        function applyTheme(theme) {
-            document.body.className = theme === 'dark' ? 'bg-dark text-white' : '';
-        }
+        // Stock data logic
+        let stockChart = null; // Chart instance
+        let currentStockSymbol = null; // Track currently displayed stock
+        let stockPriceData = {}; // Cache price data for each stock
 
-        // 股票数据逻辑
-        const API_URL = 'http://localhost:3001/api/stocks';
-        let stockChart = null; // 图表实例
-
-        // 页面加载时加载股票数据
-        window.addEventListener('load', loadStocks);
-
-        // 保存股票按钮事件
+        // Save stock button event
         document.getElementById('save-stock').addEventListener('click', saveNewStock);
 
-        // 加载股票数据
-        async function loadStocks() {
+        // Load stock data
+        function loadStocks() {
             try {
-                // 开发阶段：用localStorage模拟
+                // Get from localStorage or use mock data
                 const storedStocks = localStorage.getItem('stocks');
                 const stocks = storedStocks ? JSON.parse(storedStocks) : getMockStocks();
                 
                 renderStocksTable(stocks);
             } catch (error) {
-                console.error('加载股票数据失败:', error);
+                console.error('Failed to load stocks:', error);
                 document.getElementById('stocks-table-body').innerHTML = 
                     '<tr><td colspan="8" class="text-center text-danger">Failed to load stocks</td></tr>';
             }
         }
 
-        // 渲染股票表格
+        // Render stock table
         function renderStocksTable(stocks) {
             const tableBody = document.getElementById('stocks-table-body');
             tableBody.innerHTML = '';
@@ -357,13 +592,18 @@
             }
 
             stocks.forEach(stock => {
-                // 计算衍生数据
+                // Calculate derived data
                 const marketValue = (stock.currentPrice * stock.shares).toFixed(2);
                 const change = ((stock.currentPrice - stock.purchasePrice) / stock.purchasePrice * 100).toFixed(2);
                 const changeClass = change >= 0 ? 'price-up' : 'price-down';
                 const changeIcon = change >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down';
 
                 const row = document.createElement('tr');
+                // Highlight selected row
+                if (currentStockSymbol === stock.symbol) {
+                    row.classList.add('selected');
+                }
+                
                 row.innerHTML = `
                     <td>${stock.symbol}</td>
                     <td>${stock.name}</td>
@@ -376,10 +616,10 @@
                     </td>
                     <td>
                         <button class="action-btn" onclick="showStockChart('${stock.symbol}', '${stock.name}')">
-                            <i class="fas fa-chart-line text-primary"></i>
+                            <i class="fas fa-chart-line"></i>
                         </button>
                         <button class="action-btn" onclick="editStock(${stock.id})">
-                            <i class="fas fa-edit text-secondary"></i>
+                            <i class="fas fa-edit"></i>
                         </button>
                     </td>
                 `;
@@ -387,7 +627,7 @@
             });
         }
 
-        // 保存新股票
+        // Save new stock
         function saveNewStock() {
             const form = document.getElementById('add-stock-form');
             if (!form.checkValidity()) {
@@ -395,56 +635,112 @@
                 return;
             }
 
-            // 获取表单数据
+            // Get form data
+            const datePicker = flatpickr('#stock-purchase-date');
+            const selectedDate = datePicker.selectedDates[0] || new Date();
+            const formattedDate = selectedDate.toISOString().split('T')[0];
+
             const newStock = {
-                id: Date.now(), // 临时ID
+                id: Date.now(),
                 symbol: document.getElementById('stock-symbol').value.toUpperCase(),
                 name: document.getElementById('stock-name').value,
                 shares: parseInt(document.getElementById('stock-shares').value),
                 purchasePrice: parseFloat(document.getElementById('stock-purchase-price').value),
-                purchaseDate: document.getElementById('stock-purchase-date').value || new Date().toISOString().split('T')[0],
-                currentPrice: calculateRandomPrice(parseFloat(document.getElementById('stock-purchase-price').value)) // 模拟当前价格
+                purchaseDate: formattedDate,
+                currentPrice: calculateRandomPrice(parseFloat(document.getElementById('stock-purchase-price').value))
             };
 
-            // 保存到localStorage
+            // Save to localStorage
             const existingStocks = JSON.parse(localStorage.getItem('stocks') || '[]');
             existingStocks.push(newStock);
             localStorage.setItem('stocks', JSON.stringify(existingStocks));
 
-            // 刷新表格
+            // Refresh table
             loadStocks();
 
-            // 关闭模态框并重置表单
+            // Close modal and reset form
             const modal = bootstrap.Modal.getInstance(document.getElementById('addStockModal'));
             modal.hide();
             form.reset();
-
-            alert('Stock added successfully!');
+            datePicker.clear();
         }
 
-        // 显示股票走势图
+        // Show stock chart with fixed logic
         function showStockChart(symbol, name) {
-            // 显示图表卡片
+            // If clicking the same stock, do nothing
+            if (currentStockSymbol === symbol) {
+                // Ensure chart is visible and scrolled to
+                document.getElementById('stock-chart-card').style.display = 'block';
+                document.getElementById('stock-chart-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
+            
+            // Update current stock tracking
+            currentStockSymbol = symbol;
+            
+            // Show chart card
             document.getElementById('stock-chart-card').style.display = 'block';
             document.getElementById('chart-stock-name').textContent = `${name} (${symbol}) Price History`;
 
-            // 生成模拟的价格历史数据
-            const labels = Array.from({length: 30}, (_, i) => {
+            // Refresh table to highlight selected row
+            loadStocks();
+
+            // Fixed to 6 months
+            const days = 180;
+
+            // Generate date labels in 2024/01/01 format
+            const labels = Array.from({length: days}, (_, i) => {
                 const date = new Date();
-                date.setDate(date.getDate() - (29 - i));
-                return date.toLocaleDateString();
+                date.setDate(date.getDate() - (days - 1 - i));
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}/${month}/${day}`;
             });
 
-            const basePrice = 100 + Math.random() * 200; // 基础价格
-            const data = labels.map((_, i) => {
-                // 模拟价格波动
-                return basePrice + (Math.random() * 20 - 10) + (i * 0.5);
-            });
+            // Check if we have cached data for this stock
+            if (!stockPriceData[symbol]) {
+                // Generate price data based on the stock's current price
+                const rows = document.querySelectorAll('#stocks-table-body tr');
+                let basePrice = 150; // Default price
+                
+                // Find current price of selected stock
+                rows.forEach(row => {
+                    if (row.cells[0].textContent === symbol) {
+                        basePrice = parseFloat(row.cells[4].textContent.replace('$', ''));
+                    }
+                });
 
-            // 销毁旧图表
+                const data = [];
+                let price = basePrice * (0.9 + Math.random() * 0.2); // Starting price
+
+                // Generate trending price sequence with consistent seed for same stock
+                const seed = symbol.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                let random = mulberry32(seed); // Use consistent random generator for same stock
+                
+                const trend = (random() - 0.3) * 0.005; // Consistent trend for same stock
+                for (let i = 0; i < days; i++) {
+                    // Add random fluctuations with consistent pattern
+                    price = price * (1 + trend + (random() * 0.02 - 0.01));
+                    data.push(price.toFixed(2));
+                }
+                
+                // Cache the data for future use
+                stockPriceData[symbol] = data;
+            }
+
+            // Use cached data
+            const data = stockPriceData[symbol];
+
+            // Determine chart colors based on overall trend
+            const overallTrend = (parseFloat(data[days-1]) - parseFloat(data[0])) >= 0;
+            const lineColor = overallTrend ? 'var(--up-color)' : 'var(--down-color)';
+            const fillColor = overallTrend ? 'rgba(245, 63, 63, 0.1)' : 'rgba(0, 180, 42, 0.1)';
+
+            // Destroy old chart
             if (stockChart) stockChart.destroy();
 
-            // 创建新图表
+            // Create new chart
             const ctx = document.getElementById('stock-price-chart').getContext('2d');
             stockChart = new Chart(ctx, {
                 type: 'line',
@@ -453,33 +749,70 @@
                     datasets: [{
                         label: 'Price ($)',
                         data: data,
-                        borderColor: '#165DFF',
-                        backgroundColor: 'rgba(22, 93, 255, 0.1)',
+                        borderColor: lineColor,
+                        backgroundColor: fillColor,
+                        borderWidth: 2,
                         tension: 0.3,
-                        fill: true
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `$${context.raw}`;
+                                }
+                            }
+                        }
+                    },
                     scales: {
                         y: {
                             ticks: {
-                                callback: value => `$${value.toFixed(2)}`
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.03)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
                             }
                         }
                     }
                 }
             });
+
+            // Smooth scroll to chart
+            document.getElementById('stock-chart-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // 辅助函数：生成模拟当前价格（基于买入价上下浮动）
+        // Helper: Generate consistent random numbers based on seed
+        function mulberry32(seed) {
+            return function() {
+                seed += 0x6D2B79F5;
+                let t = seed;
+                t = Math.imul(t ^ t >>> 15, t | 1);
+                t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+                return ((t ^ t >>> 14) >>> 0) / 4294967296;
+            }
+        }
+
+        // Helper: Generate random current price
         function calculateRandomPrice(purchasePrice) {
-            const fluctuation = purchasePrice * (0.1 * Math.random() - 0.05); // ±5% 波动
+            const fluctuation = purchasePrice * (0.15 * Math.random() - 0.05); // ±10% fluctuation
             return (purchasePrice + fluctuation).toFixed(2);
         }
 
-        // 辅助函数：生成模拟股票数据
+        // Helper: Generate mock stock data
         function getMockStocks() {
             return [
                 {
@@ -489,7 +822,7 @@
                     shares: 10,
                     purchasePrice: 170.50,
                     purchaseDate: '2023-01-15',
-                    currentPrice: 182.35
+                    currentPrice: 182.35 // Up
                 },
                 {
                     id: 2,
@@ -498,26 +831,89 @@
                     shares: 5,
                     purchasePrice: 280.25,
                     purchaseDate: '2023-02-20',
-                    currentPrice: 320.75
+                    currentPrice: 320.75 // Up
                 },
                 {
                     id: 3,
                     symbol: 'GOOGL',
                     name: 'Alphabet Inc.',
                     shares: 8,
-                    purchasePrice: 135.00,
+                    purchasePrice: 145.00,
                     purchaseDate: '2023-03-10',
-                    currentPrice: 128.50
+                    currentPrice: 138.50 // Down
                 }
             ];
         }
 
-        // 编辑股票（预留方法）
+        // Edit stock
         function editStock(stockId) {
-            alert(`Edit stock with ID: ${stockId} (功能待实现)`);
-            // 实际实现时：获取股票数据，填充到表单，修改后保存
+            // Get stock data from localStorage
+            const stocks = JSON.parse(localStorage.getItem('stocks') || '[]');
+            const stock = stocks.find(s => s.id === stockId);
+            
+            if (stock) {
+                // Populate form
+                document.getElementById('stock-symbol').value = stock.symbol;
+                document.getElementById('stock-name').value = stock.name;
+                document.getElementById('stock-shares').value = stock.shares;
+                document.getElementById('stock-purchase-price').value = stock.purchasePrice;
+                
+                // Set date picker value
+                const datePicker = flatpickr('#stock-purchase-date');
+                datePicker.setDate(stock.purchaseDate);
+                
+                // Change button text
+                const saveBtn = document.getElementById('save-stock');
+                saveBtn.textContent = 'Update Stock';
+                
+                // Save update handler
+                const updateHandler = function() {
+                    // Update data
+                    const index = stocks.findIndex(s => s.id === stockId);
+                    if (index !== -1) {
+                        // If editing currently displayed stock, clear cache
+                        if (currentStockSymbol === stock.symbol) {
+                            delete stockPriceData[stock.symbol];
+                        }
+                        
+                        const updatedDate = datePicker.selectedDates[0] || new Date();
+                        const formattedUpdatedDate = updatedDate.toISOString().split('T')[0];
+                        
+                        stocks[index] = {
+                            ...stock,
+                            symbol: document.getElementById('stock-symbol').value.toUpperCase(),
+                            name: document.getElementById('stock-name').value,
+                            shares: parseInt(document.getElementById('stock-shares').value),
+                            purchasePrice: parseFloat(document.getElementById('stock-purchase-price').value),
+                            purchaseDate: formattedUpdatedDate
+                        };
+                        
+                        localStorage.setItem('stocks', JSON.stringify(stocks));
+                        loadStocks();
+                        
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('addStockModal'));
+                        modal.hide();
+                        
+                        // Reset form and button
+                        document.getElementById('add-stock-form').reset();
+                        datePicker.clear();
+                        saveBtn.textContent = 'Save Stock';
+                        saveBtn.removeEventListener('click', updateHandler);
+                        saveBtn.addEventListener('click', saveNewStock);
+                    }
+                };
+                
+                // Remove old event, add new one
+                saveBtn.removeEventListener('click', saveNewStock);
+                saveBtn.addEventListener('click', updateHandler);
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('addStockModal'));
+                modal.show();
+            }
         }
     </script>
-    <script src="./js/stocks.js"></script>
 </body>
 </html>
+    
