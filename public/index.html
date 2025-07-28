@@ -355,22 +355,11 @@
             gap: 0.75rem;
         }
         
-        .card-title i {
-            color: var(--primary-color);
-            background: rgba(76, 111, 255, 0.1);
-            width: 34px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-        }
-        
         .card-body {
-            padding: 1.75rem;
+            padding: 1.25rem 1.75rem; /* 缩减内边距，减少区块间距 */
         }
         
-        /* 账户概览样式 */
+        /* 账户概览 */
         .account-overview .revenue-summary {
             padding: 0.5rem 0;
         }
@@ -421,7 +410,7 @@
         .major-indices {
             border-radius: 0;
             padding: 0;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.75rem; /* 缩减间距 */
             background: transparent;
             border: none;
         }
@@ -430,7 +419,7 @@
         .indices-title {
             font-size: 0.95rem;
             font-weight: 600;
-            margin: 1.5rem 0 1.25rem 0;
+            margin: 1rem 0 0.75rem 0; /* 缩减上下间距 */
             color: var(--text-primary);
             display: flex;
             align-items: center;
@@ -449,7 +438,7 @@
         .index-item {
             display: flex;
             justify-content: space-between;
-            padding: 1rem 0;
+            padding: 0.8rem 0; /* 缩减内边距 */
             border-bottom: 1px solid var(--divider);
             transition: all 0.3s;
             background: transparent;
@@ -465,7 +454,7 @@
         .index-item:hover {
             background: rgba(245, 248, 255, 0.5);
             border-radius: 8px;
-            padding: 1rem;
+            padding: 0.8rem;
             margin: 0 -0.5rem;
         }
         
@@ -503,7 +492,7 @@
         .stocks-section-header {
             font-size: 0.95rem;
             font-weight: 600;
-            margin: 1.5rem 0 1.25rem 0;
+            margin: 2rem 0 0.75rem 0; /* 缩减上下间距，解决Dow Jones和Individual Stocks间距过大问题 */
             color: var(--text-primary);
             display: flex;
             align-items: center;
@@ -534,7 +523,7 @@
         .pagination {
             display: flex;
             justify-content: flex-end;
-            margin-top: 1.5rem;
+            margin-top: 1rem; /* 缩减间距 */
             gap: 0.5rem;
         }
         
@@ -672,7 +661,7 @@
         .mover-item {
             display: flex;
             justify-content: space-between;
-            padding: 1rem 0;
+            padding: 0.8rem 0; /* 缩减内边距 */
             border-bottom: 1px solid var(--divider);
             transition: all 0.3s;
         }
@@ -680,7 +669,7 @@
         .mover-item:hover {
             background: rgba(245, 248, 255, 0.5);
             border-radius: 8px;
-            padding: 1rem;
+            padding: 0.8rem;
             margin: 0 -0.5rem;
         }
         
@@ -915,7 +904,6 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            font-weight: 500;
         }
         
         .legend-color {
@@ -1051,10 +1039,6 @@
                 <a href="stocks.html" class="nav-item">
                     <i class="fas fa-chart-line"></i>
                     <span>Stocks</span>
-                </a>
-                <a href="bonds.html" class="nav-item">
-                    <i class="fas fa-certificate"></i>
-                    <span>Bonds</span>
                 </a>
                 <a href="transactions.html" class="nav-item">
                     <i class="fas fa-exchange-alt"></i>
@@ -1294,6 +1278,8 @@
                         </div>
                         <div class="chart-container mt-4">
                             <canvas id="net-worth-chart"></canvas>
+                            <!-- 新增Net Worth图表悬停信息容器 -->
+                            <div class="chart-hover-info" id="net-worth-hover"></div>
                         </div>
                     </div>
                 </div>
@@ -1377,7 +1363,6 @@
                 const now = new Date();
                 const options = { 
                     year: 'numeric', 
-                    year: 'numeric', 
                     month: 'long', 
                     day: 'numeric',
                     hour: '2-digit',
@@ -1416,7 +1401,7 @@
 
             // 图表初始化代码
             if (typeof Chart !== 'undefined') {
-                // 1. 净值图表
+                // 1. 净值图表（修复悬停不显示数字问题）
                 const netWorthCtx = document.getElementById('net-worth-chart');
                 if (netWorthCtx) {
                     const gradient = netWorthCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
@@ -1447,6 +1432,7 @@
                             plugins: { 
                                 legend: { display: false },
                                 tooltip: {
+                                    enabled: true, // 确保tooltip启用
                                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                                     padding: 12,
                                     titleFont: { size: 14, family: 'Manrope', color: '#1D2129' },
@@ -1487,10 +1473,44 @@
                             }
                         }
                     });
+
+                    // 为Net Worth图表添加悬停交互
+                    const netWorthContainer = netWorthCtx.parentElement;
+                    const netWorthHover = document.getElementById('net-worth-hover');
+                    
+                    netWorthContainer.addEventListener('mousemove', function(e) {
+                        const rect = netWorthCtx.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        // 查找最近的数据点
+                        const points = window.netWorthChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                        if (points.length) {
+                            const point = points[0];
+                            const index = point.index;
+                            const value = window.netWorthChart.data.datasets[0].data[index];
+                            const label = window.netWorthChart.data.labels[index];
+                            
+                            // 更新悬停信息
+                            netWorthHover.innerHTML = `
+                                <div class="chart-hover-info-title">${label} Net Worth</div>
+                                <div class="chart-hover-info-value">$${value.toLocaleString()}</div>
+                            `;
+                            
+                            netWorthHover.style.left = `${x + 15}px`;
+                            netWorthHover.style.top = `${y + 15}px`;
+                            netWorthHover.style.opacity = '1';
+                        } else {
+                            netWorthHover.style.opacity = '0';
+                        }
+                    });
+                    
+                    netWorthContainer.addEventListener('mouseleave', function() {
+                        netWorthHover.style.opacity = '0';
+                    });
                 }
 
                 // 2. 现金流图表
-
                 const cashFlowCtx = document.getElementById('cash-flow-chart');
                 if (cashFlowCtx) {
                     window.cashFlowChart = new Chart(cashFlowCtx.getContext('2d'), {
@@ -1501,7 +1521,7 @@
                                 { 
                                     label: 'Income', 
                                     data: [6800, 7200, 7000, 7500, 6900, 7100], 
-                                    backgroundColor: '#9576d2', // 收入用红色表示（与上涨颜色一致）
+                                    backgroundColor: '#9576d2',
                                     borderRadius: 6,
                                     borderSkipped: false,
                                     barThickness: 20
@@ -1509,7 +1529,7 @@
                                 { 
                                     label: 'Expenses', 
                                     data: [4500, 4900, 4700, 5200, 4800, 4200], 
-                                    backgroundColor: '#74ebc4', // 支出用绿色表示（与下跌颜色一致）
+                                    backgroundColor: '#74ebc4',
                                     borderRadius: 6,
                                     borderSkipped: false,
                                     barThickness: 20
@@ -1529,13 +1549,7 @@
                                     }
                                 },
                                 tooltip: {
-                                    enabled: false,
-                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                    padding: 12,
-                                    titleFont: { size: 14, family: 'Manrope', color: '#1D2129' },
-                                    bodyFont: { size: 14, family: 'Manrope', color: '#1D2129' },
-                                    borderColor: '#E2E8F0',
-                                    borderWidth: 1
+                                    enabled: false
                                 }
                             },
                             scales: { 
@@ -1765,7 +1779,7 @@
                     break;
                 case '6M':  // 对应"Six Month"选项的value（默认选中）
                     labels = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-                    data = [225000, 228000, 231000, 235000, 242000, 247850];
+                    data = [225000, 228000, 228000, 231000, 235000, 242000, 247850];
                     break;
                 case '1Y':  // 对应"One Year"选项的value
                     labels = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
