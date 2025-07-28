@@ -1,285 +1,619 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- 引入Bootstrap样式 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- 引入Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
-  <title>Cash Flow Management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Flow | Portfolio Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            /* 科研风格低饱和色 */
+            --research-blue: #a8d5e2;
+            --research-green: #b5d6a0;
+            --research-purple: #c9b1e6;
+            --research-gray: #e0e0e0;
+            
+            /* 导航栏同步变量 */
+            --top-nav-gray: #353a3e;
+            --nav-text: #E5E7EB;
+            --nav-text-hover: #FFFFFF;
+            --dropdown-bg: #FFFFFF;
+            --dropdown-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            
+            /* 页面基础变量 */
+            --bg-light: #F9F9F9;
+            --bg-white: #FFFFFF;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --border-light: #f0f0f0;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            padding-top: 60px;
+            line-height: 1.5;
+        }
+        
+        /* 顶部导航栏（完全同步主页） */
+        .top-nav {
+            background-color: var(--top-nav-gray);
+            padding: 0 1.5rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--nav-text-hover);
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin: 0 0.5rem;
+            flex: 1;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .nav-links::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .nav-item {
+            padding: 0.5rem 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--nav-text);
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--nav-text-hover);
+        }
+        
+        /* 用户菜单（带悬浮下拉框） */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--research-blue);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            width: 180px;
+            background-color: var(--dropdown-bg);
+            border-radius: 6px;
+            box-shadow: var(--dropdown-shadow);
+            list-style: none;
+            padding: 0.5rem 0;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(5px);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+        
+        .user-menu:hover .user-dropdown {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .user-dropdown::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: 12px;
+            width: 10px;
+            height: 10px;
+            background-color: var(--dropdown-bg);
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .user-dropdown li a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .user-dropdown li a:hover {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+        }
+        
+        /* 主内容区（紧凑布局） */
+        .container {
+            max-width: 1200px;
+            margin: 1.25rem auto;
+            padding: 0 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        /* 信息卡片区域 */
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: 1rem;
+        }
+        
+        .info-card {
+            background-color: var(--bg-white);
+            border-radius: 6px;
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .info-card-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-card-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .info-card-trend {
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .trend-up {
+            color: #28a745;
+        }
+        
+        .trend-down {
+            color: #dc3545;
+        }
+        
+        /* 交易操作区（紧凑版） */
+        .transaction-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-md);
+            align-items: end;
+            padding: 1rem;
+            background-color: var(--bg-white);
+            border-radius: 6px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        
+        .form-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .form-control {
+            padding: 0.65rem;
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--research-blue);
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.9rem;
+        }
+        
+        .submit-btn {
+            padding: 0.65rem 1rem;
+            background-color: var(--research-blue);
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .submit-btn:hover {
+            background-color: #95c8d8;
+        }
+        
+        /* 卡片样式（紧凑版） */
+        .card {
+            background-color: var(--bg-white);
+            border-radius: 6px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-light);
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        /* 图表容器 */
+        .chart-container {
+            height: 280px;
+            width: 100%;
+        }
+        
+        /* 交易记录表格（紧凑版） */
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+        
+        .transactions-table th,
+        .transactions-table td {
+            padding: 0.65rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9rem;
+        }
+        
+        .transactions-table th {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .transaction-type {
+            padding: 0.2rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .type-income { background-color: var(--research-green); }
+        .type-expense { background-color: var(--research-purple); }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .transaction-form { grid-template-columns: 1fr; }
+            .chart-container { height: 230px; }
+            .info-cards { grid-template-columns: 1fr 1fr; }
+        }
+        
+        @media (max-width: 480px) {
+            .info-cards { grid-template-columns: 1fr; }
+            .nav-item span { display: none; }
+            .nav-item { padding: 0.5rem; }
+        }
+    </style>
 </head>
 <body>
-  <!-- 导航栏 -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- 顶部导航栏（与主页完全一致） -->
+    <div class="top-nav">
+        <div class="logo">
+            <i class="fas fa-university fa-2x" style="color: var(--nav-text-hover);"></i>
+            <h1>Portfolio Pro</h1>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i> <span>Dashboard</span>
+            </a>
+            <a href="cash.html" class="nav-item active">
+                <i class="fas fa-wallet"></i> <span>Cash</span>
+            </a>
+            <a href="stocks.html" class="nav-item">
+                <i class="fas fa-chart-line"></i> <span>Stocks</span>
+            </a>
+            <a href="bonds.html" class="nav-item">
+                <i class="fas fa-certificate"></i> <span>Bonds</span>
+            </a>
+            <a href="transactions.html" class="nav-item">
+                <i class="fas fa-exchange-alt"></i> <span>Transactions</span>
+            </a>
+        </div>
+        
+        <div class="user-menu">
+            <div class="user-avatar" title="John Doe">JD</div>
+            <!-- 用户下拉悬浮框 -->
+            <ul class="user-dropdown">
+                <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
+                <li style="border-top: 1px solid var(--border-light); margin-top: 0.2rem;">
+                    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
     <div class="container">
-      <a class="navbar-brand" href="index.html">Portfolio Management</a>
-      <div class="navbar-nav">
-        <a class="nav-link active" href="cash.html">Cash</a>
-        <a class="nav-link" href="bonds.html">Bonds</a>
-        <a class="nav-link" href="stocks.html">Stocks</a>
-        <a class="nav-link" href="transactions.html">Transactions</a>
-        <a class="nav-link" href="settings.html">Settings</a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- 主要内容区 -->
-  <div class="container mt-4">
-    <h2>Cash Flow Records</h2>
-
-    <!-- 这里会通过JS动态插入总计卡片 -->
-    
-    <!-- 现金流图表 -->
-    <div class="card mb-4">
-      <div class="card-header">Cash Flow Trend</div>
-      <div class="card-body">
-        <canvas id="cashChart" height="200"></canvas> <!-- 图表容器 -->
-      </div>
-    </div>
-
-    <!-- 现金流列表 + 添加按钮 -->
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5>All Transactions</h5>
-        <!-- 添加现金流的按钮 -->
-        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addCashModal">
-          Add New Record
-        </button>
-      </div>
-      <div class="card-body">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type (Income/Expense)</th>
-              <th>Amount ($)</th>
-              <th>Description</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="cashTableBody">
-            <!-- 数据会通过JS动态加载到这里 -->
-            <tr><td colspan="5" class="text-center">Loading data...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- 添加现金流的弹窗（Bootstrap模态框） -->
-  <div class="modal fade" id="addCashModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add Cash Transaction</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="addCashForm">
-            <div class="mb-3">
-              <label for="transactionType" class="form-label">Type</label>
-              <select class="form-select" id="transactionType" required>
-                <option value="income">Income (收入)</option>
-                <option value="expense">Expense (支出)</option>
-              </select>
+        <h1 class="page-title">Cash Management</h1>
+        
+        <!-- 现金概览卡片（新增，丰富内容） -->
+        <div class="info-cards">
+            <div class="info-card">
+                <div class="info-card-title">Current Balance</div>
+                <div class="info-card-value">$52,300</div>
             </div>
-            <div class="mb-3">
-              <label for="transactionAmount" class="form-label">Amount</label>
-              <input type="number" step="0.01" class="form-control" id="transactionAmount" required>
-            </div>
-            <div class="mb-3">
-              <label for="transactionDate" class="form-label">Date</label>
-              <input type="date" class="form-control" id="transactionDate" required>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="saveCashBtn">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 引入Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- 引入自定义JS -->
-  <script>
-    // 完全前端模拟数据，不依赖任何后端接口
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1. 定义模拟数据
-        const mockData = {
-            monthly: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                income: [3200, 3500, 3100, 4000, 3800, 4200],
-                expenses: [2100, 2400, 1900, 2800, 2500, 2600]
-            },
-            totals: {
-                income: 21800,
-                expenses: 14300,
-                netFlow: 7500
-            },
-            transactions: [
-                { id: 1, type: 'income', amount: 3200, date: '2023-01-05', description: 'Salary' },
-                { id: 2, type: 'expense', amount: 800, date: '2023-01-10', description: 'Rent' },
-                { id: 3, type: 'expense', amount: 300, date: '2023-01-15', description: 'Groceries' },
-                { id: 4, type: 'income', amount: 3500, date: '2023-02-05', description: 'Salary' },
-                { id: 5, type: 'expense', amount: 1200, date: '2023-02-10', description: 'Utilities' },
-                { id: 6, type: 'income', amount: 4200, date: '2023-06-05', description: 'Salary + Bonus' }
-            ]
-        };
-
-        // 2. 渲染所有数据
-        renderAllData(mockData);
-
-        // 3. 绑定事件（模拟新增/删除功能）
-        bindEvents();
-    });
-
-    // 统一渲染所有数据
-    function renderAllData(data) {
-        displayTotals(data.totals);
-        displayTransactionsTable(data.transactions);
-        createMonthlyChart(data.monthly);
-    }
-
-    // 显示总计卡片
-    function displayTotals(totals) {
-        // 确保容器存在
-        let totalsContainer = document.getElementById('totalsContainer');
-        if (!totalsContainer) {
-            totalsContainer = document.createElement('div');
-            totalsContainer.id = 'totalsContainer';
-            totalsContainer.className = 'row mb-4';
-            // 插入到页面中（标题下方）
-            document.querySelector('.container').insertBefore(
-                totalsContainer,
-                document.querySelector('.card')
-            );
-        }
-
-        // 填充数据
-        totalsContainer.innerHTML = `
-            <div class="col-md-4">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <h6>Total Income</h6>
-                        <h3>$${totals.income.toFixed(2)}</h3>
-                    </div>
+            <div class="info-card">
+                <div class="info-card-title">Monthly Income</div>
+                <div class="info-card-value">$7,500</div>
+                <div class="info-card-trend trend-up">
+                    <i class="fas fa-arrow-up"></i> 4.2% from last month
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card bg-danger text-white">
-                    <div class="card-body">
-                        <h6>Total Expenses</h6>
-                        <h3>$${totals.expenses.toFixed(2)}</h3>
-                    </div>
+            <div class="info-card">
+                <div class="info-card-title">Monthly Expense</div>
+                <div class="info-card-value">$6,800</div>
+                <div class="info-card-trend trend-down">
+                    <i class="fas fa-arrow-down"></i> 2.1% from last month
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <h6>Net Cash Flow</h6>
-                        <h3>$${totals.netFlow.toFixed(2)}</h3>
-                    </div>
+            <div class="info-card">
+                <div class="info-card-title">Monthly Savings</div>
+                <div class="info-card-value">$700</div>
+                <div class="info-card-trend trend-up">
+                    <i class="fas fa-arrow-up"></i> 12.5% from last month
                 </div>
             </div>
-        `;
-    }
+        </div>
+        
+        <!-- 交易操作区 -->
+        <form class="transaction-form" id="transaction-form">
+            <div class="form-group">
+                <label class="form-label">Transaction Type</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="transaction-type" value="deposit" checked> Deposit
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="transaction-type" value="withdraw"> Withdraw
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Amount ($)</label>
+                <input type="number" step="0.01" class="form-control" placeholder="0.00" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-control" placeholder="e.g. Salary, Rent" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="submit-btn">Submit Transaction</button>
+            </div>
+        </form>
+        
+        <!-- 月度现金流图表 -->
+        <div class="card">
+            <div class="card-header">
+                <span>Monthly Cash Flow</span>
+                <select class="form-control form-control-sm" style="width: auto;" id="period-select">
+                    <option value="6">Last 6 Months</option>
+                    <option value="12">Last 12 Months</option>
+                </select>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="monthly-flow-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 最近交易记录 -->
+        <div class="card">
+            <div class="card-header">Recent Transactions</div>
+            <div class="card-body">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2023-07-15</td>
+                            <td>Salary Payment</td>
+                            <td><span class="transaction-type type-income">Income</span></td>
+                            <td>+$7,500</td>
+                            <td>$52,300</td>
+                        </tr>
+                        <tr>
+                            <td>2023-07-10</td>
+                            <td>Rent Payment</td>
+                            <td><span class="transaction-type type-expense">Expense</span></td>
+                            <td>-$2,800</td>
+                            <td>$44,800</td>
+                        </tr>
+                        <tr>
+                            <td>2023-07-05</td>
+                            <td>Freelance Work</td>
+                            <td><span class="transaction-type type-income">Income</span></td>
+                            <td>+$1,200</td>
+                            <td>$47,600</td>
+                        </tr>
+                        <tr>
+                            <td>2023-06-30</td>
+                            <td>Utility Bills</td>
+                            <td><span class="transaction-type type-expense">Expense</span></td>
+                            <td>-$1,400</td>
+                            <td>$46,400</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    // 显示交易表格
-    function displayTransactionsTable(transactions) {
-        const tableBody = document.getElementById('cashTableBody');
-        if (!tableBody) {
-            console.error('未找到表格容器，请检查HTML中的cashTableBody');
-            return;
-        }
-
-        // 清空表格
-        tableBody.innerHTML = '';
-
-        // 填充数据
-        transactions.forEach(transaction => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${formatDate(transaction.date)}</td>
-                <td>${transaction.type === 'income' ? 
-                    '<span class="text-success">Income</span>' : 
-                    '<span class="text-danger">Expense</span>'}</td>
-                <td>$${transaction.amount.toFixed(2)}</td>
-                <td>${transaction.description}</td>
-                <td>
-                    <button class="btn btn-sm btn-danger" 
-                            onclick="deleteTransaction(${transaction.id})">
-                        Delete
-                    </button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    // 创建月度图表
-    function createMonthlyChart(monthlyData) {
-        const ctx = document.getElementById('cashChart');
-        if (!ctx) {
-            console.error('未找到图表容器，请检查HTML中的cashChart');
-            return;
-        }
-
-        // 销毁旧图表
-        if (window.cashChart) window.cashChart.destroy();
-
-        // 创建新图表
-        window.cashChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: monthlyData.labels,
-                datasets: [
-                    {
-                        label: 'Income',
-                        data: monthlyData.income,
-                        backgroundColor: 'rgba(46, 204, 113, 0.7)'
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 图表初始化
+            const incomeColor = '#b5d6a0';
+            const expenseColor = '#a8d5e2';
+            
+            const ctx = document.getElementById('monthly-flow-chart').getContext('2d');
+            const monthlyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: [6800, 7200, 7000, 7500, 6900, 7500],
+                            backgroundColor: incomeColor,
+                            borderRadius: 4,
+                            barPercentage: 0.7
+                        },
+                        {
+                            label: 'Expenses',
+                            data: [4500, 4900, 4700, 5200, 4800, 4000],
+                            backgroundColor: expenseColor,
+                            borderRadius: 4,
+                            barPercentage: 0.7
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.raw.toLocaleString();
+                                }
+                            }
+                        }
                     },
-                    {
-                        label: 'Expenses',
-                        data: monthlyData.expenses,
-                        backgroundColor: 'rgba(231, 76, 60, 0.7)'
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: { grid: { display: false } }
                     }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { title: { display: true, text: 'Amount ($)' } }
                 }
-            }
+            });
+
+            // 周期选择
+            document.getElementById('period-select').addEventListener('change', function() {
+                const months = parseInt(this.value);
+                monthlyChart.data.labels = months === 6 
+                    ? ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul']
+                    : ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+                monthlyChart.update();
+            });
+
+            // 表单提交
+            document.getElementById('transaction-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const type = this.querySelector('input[name="transaction-type"]:checked').value;
+                const amount = this.querySelector('input[type="number"]').value;
+                alert(`Successfully ${type === 'deposit' ? 'deposited' : 'withdrawn'} $${parseFloat(amount).toFixed(2)}`);
+                this.reset();
+            });
         });
-    }
-
-    // 绑定事件
-    function bindEvents() {
-        // 保存按钮事件（模拟）
-        document.getElementById('saveCashBtn')?.addEventListener('click', function() {
-            alert('模拟保存成功（实际不会提交到后端）');
-            // 关闭模态框
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addCashModal'));
-            modal?.hide();
-        });
-    }
-
-    // 工具函数：格式化日期
-    function formatDate(dateString) {
-        return new Date(dateString).toLocaleDateString('en-US');
-    }
-
-    // 全局函数：删除交易（模拟）
-    window.deleteTransaction = function(id) {
-        if (confirm('确定删除这条记录吗？')) {
-            alert(`模拟删除ID为${id}的记录`);
-        }
-    };
-  </script>
+    </script>
 </body>
 </html>
