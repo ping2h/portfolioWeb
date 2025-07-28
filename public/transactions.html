@@ -6,32 +6,27 @@
     <title>Transactions & Trading | Portfolio Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
         :root {
-            /* 基金市场颜色规范 */
-            --up-color: #F53F3F;    /* 卖出/上涨红色 */
-            --down-color: #00B42A;  /* 买入/下跌绿色 */
-            --primary-color: #a8d5e2;
-            --warning-color: #FF7D00; /* 警告橙色 */
+            --primary-color: #4C6FFF;
+            --primary-light: #6B8AFF;
+            --secondary-color: #1BC5BD; /* 绿点核心颜色 */
+            --accent-color: #8950FC;
+            --rise-color: #c46060e3;   /* 上涨 - 红色 */
+            --fall-color: #10B981;     /* 下跌 - 绿色 */
+            --warning-color: #F59E0B;
             
-            /* 导航栏变量 */
-            --top-nav-gray: #353a3e;
-            --nav-text: #E5E7EB;
-            --nav-text-hover: #FFFFFF;
-            --dropdown-bg: #FFFFFF;
-            --dropdown-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            
-            /* 页面基础变量 */
-            --bg-light: #F9F9F9;
+            --text-primary: #1D2129;
+            --text-secondary: #4E5969;
+            --text-tertiary: #6a6d72;
+            --bg-light: #F7F9FC;
             --bg-white: #FFFFFF;
-            --text-primary: #333333;
-            --text-secondary: #666666;
-            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            --border-light: #f0f0f0;
-            --spacing-sm: 0.5rem;
-            --spacing-md: 1rem;
+            --bg-card: #d1d5c730;
+            --card-border: rgba(0, 0, 0, 0.05);
+            --divider: #E2E8F0;
+            --top-nav-gray: #1A1A27; /* 导航栏背景 */
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --dropdown-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -41,17 +36,18 @@
         }
         
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Manrope', 'Inter', sans-serif;
             background-color: var(--bg-light);
             color: var(--text-primary);
-            padding-top: 60px;
-            line-height: 1.5;
+            padding-top: 70px;
+            line-height: 1.6;
         }
         
-        /* 顶部导航栏（与其他页面一致） */
+        /* 顶部导航栏 */
         .top-nav {
-            background-color: var(--top-nav-gray);
-            padding: 0 1.5rem;
+            background: var(--top-nav-gray);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 1.5rem;
             position: fixed;
             top: 0;
             left: 0;
@@ -60,123 +56,187 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 60px;
+            height: 70px;
+            border-bottom: 1px solid rgba(179, 69, 69, 0.1);
         }
         
         .logo {
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            flex-shrink: 0;
         }
         
         .logo h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--nav-text-hover);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--bg-white);
+            letter-spacing: -0.5px;
+        }
+        
+        .logo h1 span {
+            background: linear-gradient(to right, var(--primary-light), var(--accent-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.5rem;
             margin: 0 0.5rem;
             flex: 1;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        
-        .nav-links::-webkit-scrollbar {
-            display: none;
         }
         
         .nav-item {
-            padding: 0.5rem 0.75rem;
+            padding: 0.7rem 1.1rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: var(--nav-text);
+            gap: 0.65rem;
+            color: rgba(227, 222, 222, 0.8);
             text-decoration: none;
-            border-radius: 4px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
             font-size: 0.9rem;
-            transition: all 0.2s;
+            position: relative;
+            font-weight: 500;
+            flex-shrink: 0;
         }
         
         .nav-item:hover, .nav-item.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--nav-text-hover);
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--bg-white);
+        }
+        
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--secondary-color);
+            display: block;
+        }
+        
+        .nav-item i {
+            width: 1.1rem;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        /* 搜索框样式 */
+        .header-search-container {
+            position: relative;
+            width: 220px;
+            transition: all 0.3s ease;
+            flex-shrink: 1;
+            min-width: 150px;
+        }
+        
+        .header-search-input {
+            width: 100%;
+            padding: 0.7rem 0.85rem 0.7rem 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--bg-white);
+            font-weight: 500;
+        }
+        
+        .header-search-icon {
+            position: absolute;
+            left: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
         }
         
         /* 用户菜单 */
         .user-menu {
-            position: relative;
             display: flex;
             align-items: center;
+            gap: 0.75rem;
+            position: relative;
             cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            flex-shrink: 0;
         }
         
         .user-avatar {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background-color: var(--primary-color);
-            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+            color: var(--bg-white);
+        }
+        
+        @media (min-width: 992px) {
+            .user-name {
+                display: block;
+            }
         }
         
         .user-dropdown {
             position: absolute;
-            top: calc(100% + 5px);
+            top: calc(100% + 10px);
             right: 0;
-            width: 180px;
-            background-color: var(--dropdown-bg);
-            border-radius: 6px;
+            background-color: var(--bg-white);
+            border-radius: 12px;
             box-shadow: var(--dropdown-shadow);
+            width: 220px;
+            padding: 0.75rem 0;
+            margin: 0;
             list-style: none;
-            padding: 0.5rem 0;
-            visibility: hidden;
             opacity: 0;
-            transform: translateY(5px);
-            transition: all 0.2s ease;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
             z-index: 1001;
+            border: 1px solid var(--divider);
         }
         
         .user-menu:hover .user-dropdown {
-            visibility: visible;
             opacity: 1;
+            visibility: visible;
             transform: translateY(0);
         }
         
-        .user-dropdown::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            right: 12px;
-            width: 10px;
-            height: 10px;
-            background-color: var(--dropdown-bg);
-            transform: rotate(45deg);
-            box-shadow: -2px -2px 3px rgba(0, 0, 0, 0.05);
-        }
-        
-        .user-dropdown li a {
+        .user-dropdown a {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.6rem 1rem;
+            gap: 0.85rem;
+            padding: 0.85rem 1.5rem;
             color: var(--text-primary);
             text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s;
         }
         
-        .user-dropdown li a:hover {
-            background-color: var(--bg-light);
+        .user-dropdown a:hover {
+            background: rgba(76, 111, 255, 0.05);
+            color: var(--primary-color);
         }
         
-        /* 主内容区 */
+        /* 主内容区样式 */
         .container {
             max-width: 1200px;
             margin: 1.25rem auto;
@@ -184,16 +244,17 @@
         }
         
         .page-title {
-            font-size: 1.6rem;
-            font-weight: 600;
+            font-size: 1.85rem;
+            font-weight: 700;
             margin-bottom: 1rem;
+            color: var(--text-primary);
         }
         
         .content-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
         
         @media (max-width: 768px) {
@@ -202,21 +263,21 @@
             }
         }
         
-        /* 交易表单区域 */
         .trade-section {
-            background-color: var(--bg-white);
-            border-radius: 6px;
+            background-color: var(--bg-card);
+            border-radius: 16px;
             box-shadow: var(--card-shadow);
-            padding: 1rem;
+            padding: 1.5rem;
             height: 100%;
+            border: 1px solid var(--card-border);
         }
         
         .section-title {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 600;
             margin-bottom: 1rem;
             padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--divider);
         }
         
         .trade-form .form-group {
@@ -234,14 +295,9 @@
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #ced4da;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 1rem;
-        }
-        
-        .trade-form input:focus, .trade-form select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(168, 213, 226, 0.25);
+            background: var(--bg-white);
         }
         
         .radio-group {
@@ -260,40 +316,33 @@
             width: 100%;
             padding: 0.75rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            margin-top: 1rem;
         }
         
         .btn-buy {
-            background-color: var(--down-color);
+            background-color: var(--fall-color); /* 买入按钮用绿色 */
             color: white;
         }
         
         .btn-sell {
-            background-color: var(--up-color);
+            background-color: var(--rise-color); /* 卖出按钮用红色 */
             color: white;
-        }
-        
-        .btn-buy:hover {
-            background-color: #009a24;
-        }
-        
-        .btn-sell:hover {
-            background-color: #e03232;
         }
         
         .stock-info {
             margin-top: 1rem;
             padding: 1rem;
-            background-color: var(--bg-light);
-            border-radius: 4px;
+            background-color: rgba(245, 248, 255, 0.5);
+            border-radius: 8px;
             display: none;
         }
         
@@ -307,25 +356,10 @@
             margin-bottom: 0.5rem;
         }
         
-        .info-label {
-            color: var(--text-secondary);
-        }
-        
-        .info-value {
-            font-weight: 500;
-        }
-        
-        .holding-info {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px dashed var(--border-light);
-        }
-        
-        /* 筛选器区域 */
         .filters {
             display: flex;
             flex-wrap: wrap;
-            gap: var(--spacing-md);
+            gap: 1rem;
             margin-bottom: 1rem;
             align-items: center;
         }
@@ -341,53 +375,26 @@
             color: var(--text-secondary);
         }
         
-        .date-range {
-            display: flex;
-            gap: var(--spacing-sm);
-            align-items: center;
-        }
-        
-        .date-input {
-            padding: 0.5rem;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-        
         .select-filter {
             padding: 0.5rem;
             border: 1px solid #ced4da;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 0.9rem;
-            background-color: white;
-        }
-        
-        .btn-refresh {
-            background-color: var(--primary-color);
-            color: var(--text-primary);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            margin-left: auto;
-        }
-        
-        /* 卡片样式 */
-        .card {
             background-color: var(--bg-white);
-            border-radius: 6px;
+        }
+        
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
             box-shadow: var(--card-shadow);
             margin-bottom: 1rem;
             overflow: hidden;
+            border: 1px solid var(--card-border);
         }
         
         .card-header {
-            padding: 0.85rem 1rem;
-            border-bottom: 1px solid var(--border-light);
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--divider);
             font-weight: 600;
             font-size: 1rem;
             display: flex;
@@ -396,10 +403,9 @@
         }
         
         .card-body {
-            padding: 1rem;
+            padding: 1.5rem;
         }
         
-        /* 表格样式 */
         .transactions-table {
             width: 100%;
             border-collapse: collapse;
@@ -409,14 +415,8 @@
         .transactions-table td {
             padding: 0.75rem 1rem;
             text-align: left;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--divider);
             font-size: 0.9rem;
-        }
-        
-        .transactions-table th {
-            font-weight: 600;
-            color: var(--text-secondary);
-            background-color: var(--bg-light);
         }
         
         .transaction-type {
@@ -427,60 +427,51 @@
         }
         
         .type-buy {
-            background-color: rgba(0, 180, 42, 0.1);
-            color: var(--down-color);
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--fall-color); /* 买入用绿色 */
         }
         
         .type-sell {
-            background-color: rgba(245, 63, 63, 0.1);
-            color: var(--up-color);
+            background-color: rgba(196, 96, 96, 0.1);
+            color: var(--rise-color); /* 卖出用红色 */
         }
         
-        /* 分页 */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-            gap: 0.5rem;
-        }
-        
-        .page-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            background-color: white;
-            cursor: pointer;
-        }
-        
-        .page-btn.active {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            color: var(--text-primary);
-        }
-        
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        /* 消息提示 */
         .message {
             padding: 1rem;
-            border-radius: 4px;
+            border-radius: 8px;
             margin-bottom: 1rem;
             display: none;
         }
         
         .message.success {
-            background-color: rgba(0, 180, 42, 0.1);
-            color: var(--down-color);
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--fall-color);
             display: block;
         }
         
         .message.error {
-            background-color: rgba(245, 63, 63, 0.1);
-            color: var(--up-color);
+            background-color: rgba(196, 96, 96, 0.1);
+            color: var(--rise-color);
             display: block;
+        }
+        
+        /* 红涨绿跌样式 */
+        .change-positive {
+            color: var(--rise-color); /* 上涨 - 红色 */
+        }
+        
+        .change-negative {
+            color: var(--fall-color); /* 下跌 - 绿色 */
+        }
+        
+        .badge.bg-success {
+            background-color: var(--rise-color) !important; /* 上涨 - 红色徽章 */
+            color: white !important;
+        }
+        
+        .badge.bg-danger {
+            background-color: var(--fall-color) !important; /* 下跌 - 绿色徽章 */
+            color: white !important;
         }
         
         /* 响应式调整 */
@@ -490,35 +481,23 @@
                 align-items: flex-start;
             }
             
-            .date-range {
-                width: 100%;
-            }
-            
-            .date-input {
-                flex: 1;
-            }
-            
-            .btn-refresh {
-                margin-left: 0;
-                width: 100%;
-                justify-content: center;
-            }
-            
             .transactions-table th:nth-child(5),
             .transactions-table td:nth-child(5) {
+                display: none;
+            }
+            
+            .header-search-container {
+                order: 3;
+                width: 100%;
+                margin-top: 0.75rem;
+            }
+            
+            .nav-item span {
                 display: none;
             }
         }
         
         @media (max-width: 480px) {
-            .nav-item span {
-                display: none;
-            }
-            
-            .nav-item {
-                padding: 0.5rem;
-            }
-            
             .transactions-table th:nth-child(4),
             .transactions-table td:nth-child(4) {
                 display: none;
@@ -527,11 +506,11 @@
     </style>
 </head>
 <body>
-    <!-- 顶部导航栏（与其他页面一致） -->
+    <!-- 顶部导航栏 -->
     <div class="top-nav">
         <div class="logo">
-            <i class="fas fa-university fa-2x" style="color: var(--nav-text-hover);"></i>
-            <h1>Portfolio Pro</h1>
+            <i class="fas fa-chart-line fa-lg" style="color: var(--primary-light);"></i>
+            <h1>Portfolio <span>Pro</span></h1>
         </div>
         
         <div class="nav-links">
@@ -544,22 +523,27 @@
             <a href="stocks.html" class="nav-item">
                 <i class="fas fa-chart-line"></i> <span>Stocks</span>
             </a>
-            <a href="bonds.html" class="nav-item">
-                <i class="fas fa-certificate"></i> <span>Bonds</span>
-            </a>
             <a href="transactions.html" class="nav-item active">
                 <i class="fas fa-exchange-alt"></i> <span>Transactions</span>
             </a>
         </div>
         
+        <!-- 搜索框 -->
+        <div class="header-search-container">
+            <i class="fas fa-search header-search-icon"></i>
+            <input type="text" class="header-search-input" placeholder="Search stocks, bonds...">
+        </div>
+        
         <div class="user-menu">
             <div class="user-avatar" title="John Doe">JD</div>
-            <!-- 用户下拉菜单 -->
+            <span class="user-name">John Doe</span>
+            <i class="fas fa-chevron-down"></i>
+            
             <ul class="user-dropdown">
                 <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
                 <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
-                <li style="border-top: 1px solid var(--border-light); margin-top: 0.2rem;">
+                <li><a href="#"><i class="fas fa-info-circle"></i> Info</a></li>
+                <li style="border-top: 1px solid var(--divider); margin-top: 0.25rem; padding-top: 0.5rem;">
                     <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </li>
             </ul>
@@ -631,7 +615,6 @@
             <div class="trade-section">
                 <h2 class="section-title">Market Watch</h2>
                 
-                <!-- 市场观察标签页 -->
                 <ul class="nav nav-tabs" id="marketTab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="stock-tab" data-bs-toggle="tab"
@@ -643,9 +626,7 @@
                     </li>
                 </ul>
                 
-                <!-- 标签页内容 -->
                 <div class="tab-content mt-3" id="marketTabContent">
-                    <!-- 股票标签页 -->
                     <div class="tab-pane fade show active" id="stock" role="tabpanel">
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between align-items-center" data-symbol="AAPL">
@@ -663,7 +644,6 @@
                         </ul>
                     </div>
                     
-                    <!-- 债券标签页 -->
                     <div class="tab-pane fade" id="bond" role="tabpanel">
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -678,17 +658,7 @@
             </div>
         </div>
         
-        <!-- 筛选器区域 -->
         <div class="filters">
-            <div class="filter-group">
-                <label class="filter-label">Date Range</label>
-                <div class="date-range">
-                    <input type="text" id="start-date" class="date-input" placeholder="Start Date">
-                    <span>to</span>
-                    <input type="text" id="end-date" class="date-input" placeholder="End Date">
-                </div>
-            </div>
-            
             <div class="filter-group">
                 <label class="filter-label">Transaction Type</label>
                 <select id="type-filter" class="select-filter">
@@ -706,17 +676,12 @@
                     <option value="bond">Bonds</option>
                 </select>
             </div>
-            
-            <button class="btn-refresh" id="refresh-transactions">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
         </div>
         
-        <!-- 交易记录表格 -->
         <div class="card">
             <div class="card-header">
                 <span>Transaction Records</span>
-                <span id="transaction-count">Showing 10 transactions</span>
+                <span id="transaction-count">Showing up to 5 transactions</span>
             </div>
             <div class="card-body">
                 <table class="transactions-table">
@@ -735,72 +700,21 @@
                         <!-- 交易记录将动态加载 -->
                     </tbody>
                 </table>
-                
-                <!-- 分页 -->
-                <div class="pagination">
-                    <button class="page-btn" id="prev-page" disabled>
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn" id="next-page">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // 初始化日期选择器
+        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 设置默认日期范围为过去30天
-            const endDate = new Date();
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - 30);
-            
-            // 初始化flatpickr日期选择器
-            const startPicker = flatpickr('#start-date', {
-                dateFormat: 'Y/m/d',
-                defaultDate: startDate,
-                locale: {
-                    firstDayOfWeek: 1,
-                    weekdays: {
-                        shorthand: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-                    },
-                    months: {
-                        shorthand: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-                    }
-                }
-            });
-            
-            const endPicker = flatpickr('#end-date', {
-                dateFormat: 'Y/m/d',
-                defaultDate: endDate,
-                locale: {
-                    firstDayOfWeek: 1,
-                    weekdays: {
-                        shorthand: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-                    },
-                    months: {
-                        shorthand: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-                    }
-                }
-            });
-            
-            // 初始化数据
             initializeData();
             loadTransactions();
-            
-            // 事件监听
             setupEventListeners();
         });
         
         // 初始化本地存储数据
         function initializeData() {
-            // 如果没有股票数据，初始化模拟数据
             if (!localStorage.getItem('stocks')) {
                 const initialStocks = [
                     {
@@ -820,21 +734,11 @@
                         purchasePrice: 280.25,
                         purchaseDate: '2024-02-20',
                         currentPrice: 320.75
-                    },
-                    {
-                        id: 3,
-                        symbol: 'GOOGL',
-                        name: 'Alphabet Inc.',
-                        shares: 8,
-                        purchasePrice: 145.00,
-                        purchaseDate: '2024-03-10',
-                        currentPrice: 138.50
                     }
                 ];
                 localStorage.setItem('stocks', JSON.stringify(initialStocks));
             }
             
-            // 如果没有交易记录，初始化模拟数据
             if (!localStorage.getItem('transactions')) {
                 localStorage.setItem('transactions', JSON.stringify(getMockTransactions()));
             }
@@ -842,19 +746,14 @@
         
         // 设置事件监听器
         function setupEventListeners() {
-            // 股票代码输入事件
             document.getElementById('stock-symbol').addEventListener('input', handleSymbolInput);
-            
-            // 数量输入事件
             document.getElementById('quantity').addEventListener('input', calculateTotalValue);
             
-            // 交易类型切换事件
             document.querySelectorAll('input[name="action"]').forEach(radio => {
                 radio.addEventListener('change', function() {
                     const action = this.value;
                     const button = document.getElementById('submit-trade');
                     
-                    // 更新按钮样式
                     if (action === 'buy') {
                         button.className = 'btn-trade btn-buy';
                         button.innerHTML = '<i class="fas fa-shopping-cart"></i> Buy Stock';
@@ -863,13 +762,11 @@
                         button.innerHTML = '<i class="fas fa-arrow-circle-right"></i> Sell Stock';
                     }
                     
-                    // 更新持有信息
                     updateHoldingInfo();
                     calculateTotalValue();
                 });
             });
             
-            // 市场观察列表点击事件
             document.querySelectorAll('.list-group-item[data-symbol]').forEach(item => {
                 item.addEventListener('click', function() {
                     const symbol = this.getAttribute('data-symbol');
@@ -878,11 +775,9 @@
                 });
             });
             
-            // 交易表单提交事件
             document.getElementById('trade-form').addEventListener('submit', handleTradeSubmit);
-            
-            // 刷新交易记录事件
-            document.getElementById('refresh-transactions').addEventListener('click', loadTransactions);
+            document.getElementById('type-filter').addEventListener('change', loadTransactions);
+            document.getElementById('asset-filter').addEventListener('change', loadTransactions);
         }
         
         // 处理股票代码输入
@@ -893,30 +788,19 @@
                 return;
             }
             
-            // 获取股票数据
             const stocks = JSON.parse(localStorage.getItem('stocks') || '[]');
             const stock = stocks.find(s => s.symbol === symbol);
             
-            // 模拟当前价格（实际应用中应从API获取）
             let currentPrice = 0;
-            let stockName = symbol;
-            
             if (stock) {
                 currentPrice = stock.currentPrice;
-                stockName = stock.name;
             } else {
-                // 为不存在的股票生成随机价格
                 currentPrice = (100 + Math.random() * 400).toFixed(2);
             }
             
-            // 更新股票信息
             document.getElementById('current-price').textContent = `$${parseFloat(currentPrice).toFixed(2)}`;
             document.getElementById('stock-info').classList.add('visible');
-            
-            // 更新持有信息
             updateHoldingInfo();
-            
-            // 计算总价值
             calculateTotalValue();
         }
         
@@ -928,7 +812,6 @@
             const holdingInfo = document.getElementById('holding-info');
             const yourHoldings = document.getElementById('your-holdings');
             
-            // 检查是否是卖出操作
             const isSellAction = document.getElementById('action-sell').checked;
             
             if (stock && isSellAction) {
@@ -960,29 +843,22 @@
             const quantity = parseInt(document.getElementById('quantity').value) || 0;
             const action = document.querySelector('input[name="action"]:checked').value;
             
-            // 验证输入
             if (!symbol || quantity <= 0) {
                 showMessage('Please enter valid symbol and quantity', 'error');
                 return;
             }
             
-            // 获取当前价格
             const priceText = document.getElementById('current-price').textContent;
             const price = parseFloat(priceText.replace('$', '')) || 0;
             
-            // 获取股票和交易记录数据
             let stocks = JSON.parse(localStorage.getItem('stocks') || '[]');
-            let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
             
-            // 处理买入操作
             if (action === 'buy') {
                 const existingStockIndex = stocks.findIndex(s => s.symbol === symbol);
                 
                 if (existingStockIndex >= 0) {
-                    // 更新现有股票
                     stocks[existingStockIndex].shares += quantity;
                 } else {
-                    // 添加新股票
                     stocks.push({
                         id: Date.now(),
                         symbol: symbol,
@@ -994,48 +870,34 @@
                     });
                 }
                 
-                // 记录交易
                 addTransaction(symbol, quantity, price, 'buy');
                 showMessage(`Successfully bought ${quantity} shares of ${symbol}`, 'success');
                 
-            // 处理卖出操作
             } else {
                 const stockIndex = stocks.findIndex(s => s.symbol === symbol);
                 
-                // 检查是否持有该股票
                 if (stockIndex === -1) {
                     showMessage(`You don't own any shares of ${symbol}`, 'error');
                     return;
                 }
                 
-                // 检查持有数量是否足够
                 if (stocks[stockIndex].shares < quantity) {
                     showMessage(`You only own ${stocks[stockIndex].shares} shares of ${symbol}`, 'error');
                     return;
                 }
                 
-                // 更新股票数量
                 stocks[stockIndex].shares -= quantity;
                 
-                // 如果数量为0，从列表中移除
                 if (stocks[stockIndex].shares === 0) {
                     stocks.splice(stockIndex, 1);
                 }
                 
-                // 记录交易
                 addTransaction(symbol, quantity, price, 'sell');
                 showMessage(`Successfully sold ${quantity} shares of ${symbol}`, 'success');
             }
             
-            // 保存更新后的数据
             localStorage.setItem('stocks', JSON.stringify(stocks));
-            localStorage.setItem('transactions', JSON.stringify(transactions));
-            
-            // 刷新交易记录
             loadTransactions();
-            
-            // 更新持有信息
-            updateHoldingInfo();
         }
         
         // 添加交易记录
@@ -1058,7 +920,7 @@
                 status: 'Completed'
             };
             
-            transactions.unshift(newTransaction); // 添加到开头
+            transactions.unshift(newTransaction);
             localStorage.setItem('transactions', JSON.stringify(transactions));
         }
         
@@ -1069,7 +931,6 @@
             messageElement.className = 'message';
             messageElement.classList.add(type);
             
-            // 3秒后隐藏消息
             setTimeout(() => {
                 messageElement.className = 'message';
             }, 3000);
@@ -1077,40 +938,23 @@
         
         // 加载交易记录
         function loadTransactions() {
-            // 获取筛选器值
-            const startDate = document.getElementById('start-date').value;
-            const endDate = document.getElementById('end-date').value;
             const typeFilter = document.getElementById('type-filter').value;
             const assetFilter = document.getElementById('asset-filter').value;
             
-            // 获取所有交易记录
             const allTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
             
-            // 应用筛选
             const filteredTransactions = allTransactions.filter(transaction => {
-                // 日期筛选
-                const transactionDate = new Date(transaction.date);
-                const start = startDate ? new Date(startDate) : null;
-                const end = endDate ? new Date(endDate) : null;
-                
-                if (start && transactionDate < start) return false;
-                if (end && transactionDate > end) return false;
-                
-                // 交易类型筛选
                 if (typeFilter !== 'all' && transaction.type !== typeFilter) return false;
-                
-                // 资产类型筛选
                 if (assetFilter !== 'all' && transaction.assetType !== assetFilter) return false;
-                
                 return true;
             });
             
-            // 更新交易记录计数
-            document.getElementById('transaction-count').textContent = 
-                `Showing ${filteredTransactions.length} transactions`;
+            const limitedTransactions = filteredTransactions.slice(0, 5);
             
-            // 渲染表格
-            renderTransactionsTable(filteredTransactions);
+            document.getElementById('transaction-count').textContent = 
+                `Showing ${limitedTransactions.length} of ${filteredTransactions.length} transactions`;
+            
+            renderTransactionsTable(limitedTransactions);
         }
         
         // 渲染交易记录表格
@@ -1146,7 +990,7 @@
             });
         }
         
-        // 辅助函数：格式化日期
+        // 格式化日期
         function formatDate(dateString) {
             const date = new Date(dateString);
             const year = date.getFullYear();
@@ -1155,7 +999,7 @@
             return `${year}/${month}/${day}`;
         }
         
-        // 辅助函数：获取股票名称
+        // 获取股票名称
         function getStockName(symbol) {
             const stockNames = {
                 'AAPL': 'Apple Inc.',
@@ -1204,6 +1048,30 @@
                     quantity: 8,
                     price: 138.50,
                     totalValue: 1108.00,
+                    assetType: 'stock',
+                    status: 'Completed'
+                },
+                {
+                    id: 4,
+                    date: '2024-07-05',
+                    symbol: 'TSLA',
+                    name: 'Tesla Inc.',
+                    type: 'buy',
+                    quantity: 3,
+                    price: 240.15,
+                    totalValue: 720.45,
+                    assetType: 'stock',
+                    status: 'Completed'
+                },
+                {
+                    id: 5,
+                    date: '2024-06-30',
+                    symbol: 'AMZN',
+                    name: 'Amazon.com Inc.',
+                    type: 'sell',
+                    quantity: 2,
+                    price: 175.80,
+                    totalValue: 351.60,
                     assetType: 'stock',
                     status: 'Completed'
                 }
