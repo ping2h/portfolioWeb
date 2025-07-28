@@ -417,24 +417,24 @@
             font-size: 0.9rem;
         }
         
-        /* 大盘指数部分 */
+        /* 大盘指数部分 - 已移除白框样式 */
         .major-indices {
-            border-radius: 12px;
-            padding: 1.25rem;
+            border-radius: 0;
+            padding: 0;
             margin-bottom: 1.5rem;
-            background: rgba(245, 248, 255, 0.5);
+            background: transparent;
+            border: none;
         }
         
         /* 大盘指数标题 */
         .indices-title {
             font-size: 0.95rem;
             font-weight: 600;
-            margin-bottom: 1.25rem;
+            margin: 1.5rem 0 1.25rem 0;
             color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            justify-content: center;
         }
         
         .indices-title::before,
@@ -445,28 +445,29 @@
             background: linear-gradient(90deg, transparent, var(--divider), transparent);
         }
         
+        /* 指数项样式 - 与个股一致 */
         .index-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.85rem;
-            padding: 0.75rem;
-            background: var(--bg-white);
-            border-radius: 10px;
-            font-size: 0.95rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--divider);
             transition: all 0.3s;
-            border: 1px solid var(--divider);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-        }
-        
-        .index-item:hover {
-            transform: translateX(3px);
-            background: rgba(76, 111, 255, 0.05);
-            border-color: var(--primary-color);
+            background: transparent;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+            margin-bottom: 0;
         }
         
         .index-item:last-child {
-            margin-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .index-item:hover {
+            background: rgba(245, 248, 255, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0 -0.5rem;
         }
         
         .index-name {
@@ -622,13 +623,14 @@
             border-radius: 12px;
             transition: all 0.3s;
             border: 1px solid var(--divider);
+            /* 添加底部对齐样式 */
+            display: flex;
+            flex-direction: column;
         }
         
-        .asset-item:hover {
-            transform: translateY(-3px);
-            background: rgba(76, 111, 255, 0.05);
-            border-color: var(--primary-color);
-            box-shadow: 0 5px 15px rgba(76, 111, 255, 0.1);
+        .asset-item .asset-value {
+            /* 添加底部对齐样式 */
+            margin-top: auto;
         }
         
         .asset-value {
@@ -706,6 +708,43 @@
         .main-card-item {
             flex: 1;
             min-width: 300px;
+        }
+        
+        /* 为Cash Flow和Asset Allocation卡片添加悬停效果 */
+        .main-card-item .card {
+            transition: all 0.3s ease;
+        }
+        
+        .main-card-item .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 悬停显示数字信息 */
+        .chart-hover-info {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--divider);
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9rem;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .chart-hover-info-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+        
+        .chart-hover-info-value {
+            font-weight: 700;
+            color: var(--primary-color);
         }
         
         /* 响应式设计调整 */
@@ -1164,11 +1203,10 @@
             <div class="main-content">
                 <!-- 欢迎横幅 -->
                 <div class="welcome-banner animate-fade delay-200">
-                    <!-- 新增关闭按钮 - 从这里开始 -->
+                    <!-- 新增关闭按钮 -->
                     <button class="close-banner" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: white; font-size: 1.2rem; cursor: pointer; opacity: 0.8; transition: opacity 0.3s;">
                         <i class="fas fa-times"></i>
                     </button>
-                    <!-- 新增关闭按钮 - 到这里结束 -->
                     <div class="welcome-text">
                         <h2>Welcome back, John!</h2>
                         <p>Your portfolio is up 4.3% this month. Review your latest investments and market trends.</p>
@@ -1188,10 +1226,10 @@
                         <h3 class="card-title"><i class="fas fa-piggy-bank"></i> Net Worth</h3>
                         <div>
                             <select class="custom-select" id="time-period-select">
-                                <option value="1M">1M</option>
-                                <option value="3M">3M</option>
-                                <option value="6M" selected>6M</option>
-                                <option value="1Y">1Y</option>
+                                <option value="1M">One Month</option>
+                                <option value="3M">Three Month</option>
+                                <option value="6M" selected>Six Month</option>
+                                <option value="1Y">One Year</option>
                                 <option value="All">All</option>
                             </select>
                         </div>
@@ -1216,8 +1254,10 @@
                                 <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> Cash Flow</h3>
                             </div>
                             <div class="card-body">
-                                <div class="chart-container">
+                                <div class="chart-container" id="cash-flow-container">
                                     <canvas id="cash-flow-chart"></canvas>
+                                    <!-- 悬停信息容器 -->
+                                    <div class="chart-hover-info" id="cash-flow-hover"></div>
                                 </div>
                                 <div class="asset-distribution mt-3">
                                     <div class="asset-item interactive">
@@ -1244,28 +1284,14 @@
                                 <h3 class="card-title"><i class="fas fa-chart-pie"></i> Asset Allocation</h3>
                             </div>
                             <div class="card-body">
-                                <div class="chart-container">
+                                <div class="chart-container" id="asset-allocation-container">
                                     <canvas id="asset-allocation-chart"></canvas>
-                                </div>
+                                    <!-- 悬停信息容器 -->
+                                    <div class="chart-hover-info" id="asset-allocation-hover"></div>
+                                
                                 
                                 <!-- 资产分布可视化 -->
-                                <div class="asset-distribution-chart">
-                                    <div class="chart-legend">
-                                        <div class="legend-item">
-                                            <div class="legend-color" style="background: var(--chart-blue);"></div>
-                                            <div>Stocks: 51%</div>
-                                        </div>
-                                        <div class="legend-item">
-                                            <div class="legend-color" style="background: var(--chart-teal);"></div>
-                                            <div>Bonds: 30%</div>
-                                        </div>
-                                        <div class="legend-item">
-                                            <div class="legend-color" style="background: var(--chart-purple);"></div>
-                                            <div>Cash: 19%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
+                               
                                 <div class="asset-distribution mt-3">
                                     <div class="asset-item interactive">
                                         <div class="asset-label">Stocks</div>
@@ -1436,6 +1462,7 @@
                                     }
                                 },
                                 tooltip: {
+                                    enabled: false, // 关键修改：关闭默认Tooltip
                                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                                     padding: 12,
                                     titleFont: { size: 14, family: 'Manrope', color: '#1D2129' },
@@ -1469,6 +1496,48 @@
                             }
                         }
                     });
+                    
+                    // 添加悬停效果
+                    const cashFlowContainer = document.getElementById('cash-flow-container');
+                    const cashFlowHover = document.getElementById('cash-flow-hover');
+                    
+                    cashFlowContainer.addEventListener('mousemove', function(e) {
+                        const canvas = cashFlowCtx;
+                        const rect = canvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        // 查找最近的柱状图
+                        let closestBar = null;
+                        let minDistance = Infinity;
+                        
+                        const points = window.cashFlowChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                        if (points.length) {
+                            const bar = points[0];
+                            const datasetIndex = bar.datasetIndex;
+                            const index = bar.index;
+                            
+                            const dataset = window.cashFlowChart.data.datasets[datasetIndex];
+                            const value = dataset.data[index];
+                            const label = window.cashFlowChart.data.labels[index];
+                            
+                            // 更新悬停信息
+                            cashFlowHover.innerHTML = `
+                                <div class="chart-hover-info-title">${label} - ${datasetIndex === 0 ? 'Income' : 'Expenses'}</div>
+                                <div class="chart-hover-info-value">$${value.toLocaleString()}</div>
+                            `;
+                            
+                            cashFlowHover.style.left = `${x + 15}px`;
+                            cashFlowHover.style.top = `${y + 15}px`;
+                            cashFlowHover.style.opacity = '1';
+                        } else {
+                            cashFlowHover.style.opacity = '0';
+                        }
+                    });
+                    
+                    cashFlowContainer.addEventListener('mouseleave', function() {
+                        cashFlowHover.style.opacity = '0';
+                    });
                 }
 
                 // 3. 资产分配图表
@@ -1477,6 +1546,7 @@
                     window.assetChart = new Chart(assetAllocationCtx.getContext('2d'), {
                         type: 'doughnut',
                         data: {
+                            
                             labels: ['Stocks', 'Bonds', 'Cash'],
                             datasets: [{
                                 data: [125600, 75300, 46950],
@@ -1501,6 +1571,7 @@
                                 tooltip: {
                                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                                     padding: 12,
+                                    enabled: false, // 关键修改：关闭默认Tooltip
                                     bodyFont: { size: 14, family: 'Manrope', color: '#1D2129' },
                                     borderColor: '#E2E8F0',
                                     borderWidth: 1,
@@ -1516,6 +1587,43 @@
                             },
                             cutout: '65%'
                         }
+                    });
+                    
+                    // 添加悬停效果
+                    const assetAllocationContainer = document.getElementById('asset-allocation-container');
+                    const assetAllocationHover = document.getElementById('asset-allocation-hover');
+                    
+                    assetAllocationContainer.addEventListener('mousemove', function(e) {
+                        const canvas = assetAllocationCtx;
+                        const rect = canvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        const points = window.assetChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                        if (points.length) {
+                            const slice = points[0];
+                            const index = slice.index;
+                            
+                            const label = window.assetChart.data.labels[index];
+                            const value = window.assetChart.data.datasets[0].data[index];
+                            const percentage = Math.round(value / window.assetChart.data.datasets[0].data.reduce((a, b) => a + b, 0) * 100);
+                            
+                            // 更新悬停信息
+                            assetAllocationHover.innerHTML = `
+                                <div class="chart-hover-info-title">${label}</div>
+                                <div class="chart-hover-info-value">$${value.toLocaleString()} (${percentage}%)</div>
+                            `;
+                            
+                            assetAllocationHover.style.left = `${x + 15}px`;
+                            assetAllocationHover.style.top = `${y + 15}px`;
+                            assetAllocationHover.style.opacity = '1';
+                        } else {
+                            assetAllocationHover.style.opacity = '0';
+                        }
+                    });
+                    
+                    assetAllocationContainer.addEventListener('mouseleave', function() {
+                        assetAllocationHover.style.opacity = '0';
                     });
                 }
             }
@@ -1562,43 +1670,37 @@
                 dropdown.style.visibility = 'hidden';
                 dropdown.style.transform = 'translateY(10px)';
             });
+            
+            // 新增欢迎横幅关闭功能
+            document.querySelector('.close-banner').addEventListener('click', function() {
+                const banner = document.querySelector('.welcome-banner');
+                banner.style.transition = 'opacity 0.5s, transform 0.5s';
+                banner.style.opacity = '0';
+                banner.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    banner.style.display = 'none';
+                }, 500);
+            });
         });
-        document.addEventListener('DOMContentLoaded', function() {
-    // 其他现有代码...
-    
-    // 新增欢迎横幅关闭功能 - 从这里开始
-    document.querySelector('.close-banner').addEventListener('click', function() {
-        const banner = document.querySelector('.welcome-banner');
-        banner.style.transition = 'opacity 0.5s, transform 0.5s';
-        banner.style.opacity = '0';
-        banner.style.transform = 'translateY(-20px)';
-        setTimeout(() => {
-            banner.style.display = 'none';
-        }, 500);
-    });
-    // 新增欢迎横幅关闭功能 - 到这里结束
-    
-    // 其他现有代码...
-});
 
         // 更新净值图表数据的函数
         function updateNetWorthChart(chart, period) {
             let labels, data;
             
             switch(period) {
-                case '1M':
+                case 'One month':
                     labels = ['Jul 1', 'Jul 8', 'Jul 15', 'Jul 22', 'Jul 29'];
                     data = [245200, 244800, 246100, 247300, 247850];
                     break;
-                case '3M':
+                case 'Three months':
                     labels = ['May', 'Jun', 'Jul'];
                     data = [235000, 242000, 247850];
                     break;
-                case '6M':
+                case 'Six months':
                     labels = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
                     data = [225000, 228000, 231000, 235000, 242000, 247850];
                     break;
-                case '1Y':
+                case 'One year':
                     labels = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
                     data = [205000, 208000, 212000, 215000, 218000, 220000, 225000, 228000, 231000, 235000, 242000, 247850];
                     break;
