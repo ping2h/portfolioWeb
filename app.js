@@ -4,8 +4,10 @@ import express from 'express';
 
 
 import accountRouter from './src/routes/accountRoutes.js';
+import positionRoutes from './src/routes/positionRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import './src/schedule/cron.js';
 
 const app = express();
 const PORT = 3000;
@@ -34,11 +36,12 @@ app.get('/account', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'account.html'));
 });
 
+/*
 app.get('/position', (req, res) => {
   console.log('Request received for root path');
   res.sendFile(path.join(__dirname, 'public', 'positions.html'));
 });
-
+*/
 
 app.get('/dashboard', (req, res) => {
   console.log('Request received for root path');
@@ -47,6 +50,7 @@ app.get('/dashboard', (req, res) => {
 
 
 app.use('/accounts', accountRouter);
+app.use('/position', positionRoutes);
 
 
 
