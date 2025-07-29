@@ -37,12 +37,13 @@ const getAssetPriceAndCh = async (symbol) => {
             //dev
             
 
-            const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
+            const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=BINANCE:${symbol}USDT&token=${token}`);
+            // https://finnhub.io/api/v1/quote?symbol=BINANCE:BTCUSDT&token=d23egtpr01qgiro3c92gd23egtpr01qgiro3c930
             console.log('getAssetPriceAndCh :', symbol);
             const data = await res.json();
             return {
-                price: data.lastPrice,
-                change: data.priceChangePercent
+                price: data.c,
+                change: data.dp
             };
         } else {
             // using finnhub api

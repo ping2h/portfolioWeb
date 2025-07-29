@@ -60,20 +60,20 @@ app.use('/assetList', assetListRoutes);
 // test api connection  /////
 /////
 
-const url = 'https://finnhub.io/api/v1/quote?symbol=BINANCE:BTCUSDT&token=d23egtpr01qgiro3c92gd23egtpr01qgiro3c930';
+// const url = 'https://finnhub.io/api/v1/quote?symbol=BINANCE:BTCUSDT&token=d23egtpr01qgiro3c92gd23egtpr01qgiro3c930';
 
-const fetchData = async () => {
-  try {
-    const res = await fetch(url);
-    const text = await res.text(); // 百度返回的是 HTML 页面
-    console.log('成功获取内容：');
-    console.log(text.slice(0, 500)); // 只打印前500个字符
-  } catch (error) {
-    console.error('请求失败:', error.message);
-  }
-};
+// const fetchData = async () => {
+//   try {
+//     const res = await fetch(url);
+//     const text = await res.text(); // 百度返回的是 HTML 页面
+//     console.log('成功获取内容：');
+//     console.log(text.slice(0, 500)); // 只打印前500个字符
+//   } catch (error) {
+//     console.error('请求失败:', error.message);
+//   }
+// };
 
-fetchData();
+// fetchData();
 
 
 
