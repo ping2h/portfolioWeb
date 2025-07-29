@@ -5,6 +5,7 @@ import express from 'express';
 
 import accountRouter from './src/routes/accountRoutes.js';
 import positionRoutes from './src/routes/positionRoutes.js';
+import caashRoute from './src/routes/cashRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import './src/schedule/cron.js';
@@ -51,7 +52,7 @@ app.get('/dashboard', (req, res) => {
 
 app.use('/accounts', accountRouter);
 app.use('/position', positionRoutes);
-
+app.use('/cash',caashRoute);
 
 
 app.listen(PORT, () => {
