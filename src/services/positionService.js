@@ -49,7 +49,8 @@ const buyPosition = async (type, symbol, shares) => {
         const [assets] = await conn.query('SELECT cash FROM asset ORDER BY id DESC LIMIT 1');
         const cash = assets.length > 0 ? parseFloat(assets[0].cash) : 0;
 
-        const totalCost = parseFloat(position.current_price) * shares;
+        const price = parseFloat(position.current_price);
+        const totalCost = price * shares;
         if (cash < totalCost) throw new Error('Insufficient cash');
 
         // 更新position表shares
@@ -67,6 +68,18 @@ const buyPosition = async (type, symbol, shares) => {
         await conn.query(
             `INSERT INTO asset (cash, stock_value, bond_value, crypto_value) VALUES (?, ?, ?, ?)`,
             [newCash, stock_value, bond_value, crypto_value]
+        );
+
+        // 插入交易记录表
+        await conn.query(
+            `INSERT INTO transaction (symbol, trade_type, quantity, price, status) VALUES (?, 0, ?, ?, 0)`,
+            [symbol, shares, price]
+        );
+
+        // 插入现金变化表
+        await conn.query(
+            `INSERT INTO cash_flow (type, amount) VALUES (1, ?)`,
+            [totalCost]
         );
 
         return { success: true, newCash };
@@ -90,7 +103,8 @@ const sellPosition = async (type, symbol, shares) => {
         const [assets] = await conn.query('SELECT cash FROM asset ORDER BY id DESC LIMIT 1');
         const cash = assets.length > 0 ? parseFloat(assets[0].cash) : 0;
 
-        const totalIncome = parseFloat(position.current_price) * shares;
+        const price = parseFloat(position.current_price);
+        const totalIncome = price * shares;
 
         // 更新position表shares
         await conn.query('UPDATE position SET shares = shares - ? WHERE id = ?', [shares, position.id]);
@@ -107,6 +121,18 @@ const sellPosition = async (type, symbol, shares) => {
         await conn.query(
             `INSERT INTO asset (cash, stock_value, bond_value, crypto_value) VALUES (?, ?, ?, ?)`,
             [newCash, stock_value, bond_value, crypto_value]
+        );
+
+        // 插入交易记录表
+        await conn.query(
+            `INSERT INTO transaction (symbol, trade_type, quantity, price, status) VALUES (?, 1, ?, ?, 0)`,
+            [symbol, shares, price]
+        );
+
+        // 插入现金变化表
+        await conn.query(
+            `INSERT INTO cash_flow (type, amount) VALUES (0, ?)`,
+            [totalIncome]
         );
 
         return { success: true, newCash };
