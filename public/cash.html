@@ -9,28 +9,26 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            /* 科研风格低饱和色 */
-            --research-blue: #a8d5e2;
-            --research-green: #b5d6a0;
-            --research-purple: #c9b1e6;
-            --research-gray: #e0e0e0;
+            /* 与stocks.html完全一致的变量系统 */
+            --primary-color: #4C6FFF;
+            --primary-light: #6B8AFF;
+            --secondary-color: #1BC5BD; /* 绿点核心颜色 */
+            --accent-color: #8950FC;
+            --rise-color: #c46060e3;   /* 上涨 - 红色 */
+            --fall-color: #10B981;     /* 下跌 - 绿色 */
+            --warning-color: #F59E0B;
             
-            /* 导航栏同步变量 */
-            --top-nav-gray: #353a3e;
-            --nav-text: #E5E7EB;
-            --nav-text-hover: #FFFFFF;
-            --dropdown-bg: #FFFFFF;
-            --dropdown-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            
-            /* 页面基础变量 */
-            --bg-light: #F9F9F9;
+            --text-primary: #1D2129;
+            --text-secondary: #4E5969;
+            --text-tertiary: #6a6d72;
+            --bg-light: #F7F9FC;
             --bg-white: #FFFFFF;
-            --text-primary: #333333;
-            --text-secondary: #666666;
-            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            --border-light: #f0f0f0;
-            --spacing-sm: 0.5rem;
-            --spacing-md: 1rem;
+            --bg-card: #d1d5c730;
+            --card-border: rgba(0, 0, 0, 0.05);
+            --divider: #E2E8F0;
+            --top-nav-gray: #1A1A27; /* 导航栏背景 */
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --dropdown-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -40,17 +38,18 @@
         }
         
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Manrope', 'Inter', sans-serif; /* 统一字体 */
             background-color: var(--bg-light);
             color: var(--text-primary);
-            padding-top: 60px;
-            line-height: 1.5;
+            padding-top: 70px;
+            line-height: 1.6; /* 统一行高 */
         }
         
-        /* 顶部导航栏（完全同步主页） */
+        /* 顶部导航栏（与stocks.html完全一致） */
         .top-nav {
-            background-color: var(--top-nav-gray);
-            padding: 0 1.5rem;
+            background: var(--top-nav-gray);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 1.5rem;
             position: fixed;
             top: 0;
             left: 0;
@@ -59,124 +58,188 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 60px;
+            height: 70px;
+            border-bottom: 1px solid rgba(179, 69, 69, 0.1);
         }
         
         .logo {
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            flex-shrink: 0;
         }
         
         .logo h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--nav-text-hover);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--bg-white);
+            letter-spacing: -0.5px;
+        }
+        
+        .logo h1 span {
+            background: linear-gradient(to right, var(--primary-light), var(--accent-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.5rem;
             margin: 0 0.5rem;
             flex: 1;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        
-        .nav-links::-webkit-scrollbar {
-            display: none;
         }
         
         .nav-item {
-            padding: 0.5rem 0.75rem;
+            padding: 0.7rem 1.1rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: var(--nav-text);
+            gap: 0.65rem;
+            color: rgba(227, 222, 222, 0.8);
             text-decoration: none;
-            border-radius: 4px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
             font-size: 0.9rem;
-            transition: all 0.2s;
+            position: relative;
+            font-weight: 500;
+            flex-shrink: 0;
         }
         
         .nav-item:hover, .nav-item.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--nav-text-hover);
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--bg-white);
         }
         
-        /* 用户菜单（带悬浮下拉框） */
-        .user-menu {
+        /* 激活态指示点（与stocks.html完全一致） */
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--secondary-color);
+            display: block;
+        }
+        
+        .nav-item i {
+            width: 1.1rem;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        /* 搜索框样式（与stocks.html完全一致） */
+        .header-search-container {
             position: relative;
+            width: 220px;
+            transition: all 0.3s ease;
+            flex-shrink: 1;
+            min-width: 150px;
+        }
+        
+        .header-search-input {
+            width: 100%;
+            padding: 0.7rem 0.85rem 0.7rem 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--bg-white);
+            font-weight: 500;
+        }
+        
+        .header-search-icon {
+            position: absolute;
+            left: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+        }
+        
+        /* 用户菜单（与stocks.html完全一致） */
+        .user-menu {
             display: flex;
             align-items: center;
+            gap: 0.75rem;
+            position: relative;
             cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            flex-shrink: 0;
         }
         
         .user-avatar {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background-color: var(--research-blue);
-            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+            color: var(--bg-white);
+        }
+        
+        @media (min-width: 992px) {
+            .user-name {
+                display: block;
+            }
         }
         
         .user-dropdown {
             position: absolute;
-            top: calc(100% + 5px);
+            top: calc(100% + 10px);
             right: 0;
-            width: 180px;
-            background-color: var(--dropdown-bg);
-            border-radius: 6px;
+            background-color: var(--bg-white);
+            border-radius: 12px;
             box-shadow: var(--dropdown-shadow);
+            width: 220px;
+            padding: 0.75rem 0;
+            margin: 0;
             list-style: none;
-            padding: 0.5rem 0;
-            visibility: hidden;
             opacity: 0;
-            transform: translateY(5px);
-            transition: all 0.2s ease;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
             z-index: 1001;
+            border: 1px solid var(--divider);
         }
         
         .user-menu:hover .user-dropdown {
-            visibility: visible;
             opacity: 1;
+            visibility: visible;
             transform: translateY(0);
         }
         
-        .user-dropdown::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            right: 12px;
-            width: 10px;
-            height: 10px;
-            background-color: var(--dropdown-bg);
-            transform: rotate(45deg);
-            box-shadow: -2px -2px 3px rgba(0, 0, 0, 0.05);
-        }
-        
-        .user-dropdown li a {
+        .user-dropdown a {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.6rem 1rem;
+            gap: 0.85rem;
+            padding: 0.85rem 1.5rem;
             color: var(--text-primary);
             text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s;
         }
         
-        .user-dropdown li a:hover {
-            background-color: var(--bg-light);
-            color: var(--text-primary);
+        .user-dropdown a:hover {
+            background: rgba(76, 111, 255, 0.05);
+            color: var(--primary-color);
         }
         
-        /* 主内容区（紧凑布局） */
+        /* 主内容区样式（与stocks.html统一） */
         .container {
             max-width: 1200px;
             margin: 1.25rem auto;
@@ -184,24 +247,26 @@
         }
         
         .page-title {
-            font-size: 1.6rem;
-            font-weight: 600;
+            font-size: 1.85rem; /* 统一标题大小 */
+            font-weight: 700;
             margin-bottom: 1rem;
+            color: var(--text-primary);
         }
         
-        /* 信息卡片区域 */
+        /* 信息卡片（与stocks.html统一） */
         .info-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--spacing-md);
+            gap: 1rem;
             margin-bottom: 1rem;
         }
         
         .info-card {
-            background-color: var(--bg-white);
-            border-radius: 6px;
-            padding: 1rem;
+            background-color: var(--bg-card);
+            border-radius: 16px; /* 统一卡片圆角 */
+            padding: 1.5rem;
             box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
         }
         
         .info-card-title {
@@ -224,24 +289,25 @@
         }
         
         .trend-up {
-            color: #28a745;
+            color: var(--rise-color); /* 使用统一上涨色 */
         }
         
         .trend-down {
-            color: #dc3545;
+            color: var(--fall-color); /* 使用统一下跌色 */
         }
         
-        /* 交易操作区（紧凑版） */
+        /* 交易操作区（风格与stocks.html统一） */
         .transaction-form {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: var(--spacing-md);
+            gap: 1rem;
             align-items: end;
-            padding: 1rem;
-            background-color: var(--bg-white);
-            border-radius: 6px;
+            padding: 1.5rem; /* 统一内边距 */
+            background-color: var(--bg-card);
+            border-radius: 16px; /* 统一圆角 */
             box-shadow: var(--card-shadow);
             margin-bottom: 1rem;
+            border: 1px solid var(--card-border);
         }
         
         .form-group {
@@ -257,15 +323,16 @@
         }
         
         .form-control {
-            padding: 0.65rem;
+            padding: 0.75rem; /* 统一表单控件内边距 */
             border: 1px solid var(--border-light);
-            border-radius: 4px;
-            font-size: 0.95rem;
+            border-radius: 8px; /* 统一表单圆角 */
+            font-size: 1rem;
         }
         
         .form-control:focus {
             outline: none;
-            border-color: var(--research-blue);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(76, 111, 255, 0.1);
         }
         
         .radio-group {
@@ -282,32 +349,37 @@
         }
         
         .submit-btn {
-            padding: 0.65rem 1rem;
-            background-color: var(--research-blue);
+            padding: 0.75rem 1rem;
+            background-color: var(--primary-color);
             border: none;
-            border-radius: 4px;
+            border-radius: 8px; /* 统一按钮圆角 */
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s;
+            color: white;
         }
         
         .submit-btn:hover {
-            background-color: #95c8d8;
+            background-color: var(--primary-light);
         }
         
-        /* 卡片样式（紧凑版） */
+        /* 卡片样式（与stocks.html完全一致） */
         .card {
-            background-color: var(--bg-white);
-            border-radius: 6px;
+            background-color: var(--bg-card);
+            border-radius: 16px;
             box-shadow: var(--card-shadow);
             margin-bottom: 1rem;
             overflow: hidden;
+            border: 1px solid var(--card-border);
         }
         
         .card-header {
-            padding: 0.85rem 1rem;
-            border-bottom: 1px solid var(--border-light);
+            padding: 1.25rem 1.5rem; /* 统一卡片头部内边距 */
+            border-bottom: 1px solid var(--divider);
             font-weight: 600;
             font-size: 1rem;
             display: flex;
@@ -316,104 +388,108 @@
         }
         
         .card-body {
-            padding: 1rem;
+            padding: 1.5rem; /* 统一卡片内容内边距 */
         }
         
-        /* 图表容器 */
+        /* 图表容器（与stocks.html统一） */
         .chart-container {
             height: 280px;
             width: 100%;
         }
         
-        /* 交易记录表格（紧凑版） */
-        .transactions-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 0.5rem;
-        }
-        
-        .transactions-table th,
-        .transactions-table td {
-            padding: 0.65rem 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 0.9rem;
-        }
-        
-        .transactions-table th {
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        
-        .transaction-type {
-            padding: 0.2rem 0.65rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        .type-income { background-color: var(--research-green); }
-        .type-expense { background-color: var(--research-purple); }
-        
-        /* 响应式调整 */
+        /* 响应式调整（与stocks.html完全一致） */
         @media (max-width: 768px) {
-            .transaction-form { grid-template-columns: 1fr; }
-            .chart-container { height: 230px; }
-            .info-cards { grid-template-columns: 1fr 1fr; }
+            .info-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .chart-container {
+                height: 230px;
+            }
+            
+            .header-search-container {
+                order: 3;
+                width: 100%;
+                margin-top: 0.75rem;
+            }
+            
+            .nav-item span {
+                display: none;
+            }
+            
+            .nav-item {
+                padding: 0.75rem;
+            }
+            
+            .nav-item i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+            
+            .nav-item.active::after {
+                display: block;
+            }
         }
         
         @media (max-width: 480px) {
-            .info-cards { grid-template-columns: 1fr; }
-            .nav-item span { display: none; }
-            .nav-item { padding: 0.5rem; }
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 顶部导航栏（与主页完全一致） -->
+    <!-- 顶部导航栏 -->
     <div class="top-nav">
         <div class="logo">
-            <i class="fas fa-university fa-2x" style="color: var(--nav-text-hover);"></i>
-            <h1>Portfolio Pro</h1>
+            <i class="fas fa-chart-line fa-lg" style="color: var(--primary-light);"></i>
+            <h1>Portfolio <span>Pro</span></h1>
         </div>
         
         <div class="nav-links">
             <a href="index.html" class="nav-item">
                 <i class="fas fa-home"></i> <span>Dashboard</span>
             </a>
+            <!-- Cash导航项激活，显示绿色指示点 -->
             <a href="cash.html" class="nav-item active">
                 <i class="fas fa-wallet"></i> <span>Cash</span>
             </a>
             <a href="stocks.html" class="nav-item">
                 <i class="fas fa-chart-line"></i> <span>Stocks</span>
             </a>
-            <a href="bonds.html" class="nav-item">
-                <i class="fas fa-certificate"></i> <span>Bonds</span>
-            </a>
             <a href="transactions.html" class="nav-item">
                 <i class="fas fa-exchange-alt"></i> <span>Transactions</span>
             </a>
         </div>
         
+        <!-- 搜索框 -->
+        <div class="header-search-container">
+            <i class="fas fa-search header-search-icon"></i>
+            <input type="text" class="header-search-input" placeholder="Search stocks, bonds...">
+        </div>
+        
         <div class="user-menu">
             <div class="user-avatar" title="John Doe">JD</div>
-            <!-- 用户下拉悬浮框 -->
+            <span class="user-name">John Doe</span>
+            <i class="fas fa-chevron-down"></i>
+            
+            <!-- 用户下拉菜单 -->
             <ul class="user-dropdown">
                 <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
                 <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
-                <li style="border-top: 1px solid var(--border-light); margin-top: 0.2rem;">
+                <li><a href="#"><i class="fas fa-info-circle"></i> Info</a></li>
+                <li style="border-top: 1px solid var(--divider); margin-top: 0.25rem; padding-top: 0.5rem;">
                     <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </li>
             </ul>
         </div>
     </div>
 
-    <!-- 主内容区 -->
+    <!-- 主内容区（已删除Recent Transactions部分） -->
     <div class="container">
         <h1 class="page-title">Cash Management</h1>
         
-        <!-- 现金概览卡片（新增，丰富内容） -->
+        <!-- 现金概览卡片 -->
         <div class="info-cards">
             <div class="info-card">
                 <div class="info-card-title">Current Balance</div>
@@ -492,60 +568,14 @@
             </div>
         </div>
         
-        <!-- 最近交易记录 -->
-        <div class="card">
-            <div class="card-header">Recent Transactions</div>
-            <div class="card-body">
-                <table class="transactions-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Type</th>
-                            <th>Amount</th>
-                            <th>Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2023-07-15</td>
-                            <td>Salary Payment</td>
-                            <td><span class="transaction-type type-income">Income</span></td>
-                            <td>+$7,500</td>
-                            <td>$52,300</td>
-                        </tr>
-                        <tr>
-                            <td>2023-07-10</td>
-                            <td>Rent Payment</td>
-                            <td><span class="transaction-type type-expense">Expense</span></td>
-                            <td>-$2,800</td>
-                            <td>$44,800</td>
-                        </tr>
-                        <tr>
-                            <td>2023-07-05</td>
-                            <td>Freelance Work</td>
-                            <td><span class="transaction-type type-income">Income</span></td>
-                            <td>+$1,200</td>
-                            <td>$47,600</td>
-                        </tr>
-                        <tr>
-                            <td>2023-06-30</td>
-                            <td>Utility Bills</td>
-                            <td><span class="transaction-type type-expense">Expense</span></td>
-                            <td>-$1,400</td>
-                            <td>$46,400</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <!-- 已删除Recent Transactions部分 -->
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 图表初始化
-            const incomeColor = '#b5d6a0';
-            const expenseColor = '#a8d5e2';
+            // 图表初始化（使用与stocks.html统一的颜色系统）
+            const incomeColor = 'var(--fall-color)'; // 收入使用绿色系
+            const expenseColor = 'var(--rise-color)'; // 支出使用红色系
             
             const ctx = document.getElementById('monthly-flow-chart').getContext('2d');
             const monthlyChart = new Chart(ctx, {
@@ -556,14 +586,14 @@
                         {
                             label: 'Income',
                             data: [6800, 7200, 7000, 7500, 6900, 7500],
-                            backgroundColor: incomeColor,
+                            backgroundColor: 'rgba(16, 185, 129, 0.7)', // 统一绿色
                             borderRadius: 4,
                             barPercentage: 0.7
                         },
                         {
                             label: 'Expenses',
                             data: [4500, 4900, 4700, 5200, 4800, 4000],
-                            backgroundColor: expenseColor,
+                            backgroundColor: 'rgba(196, 96, 96, 0.7)', // 统一红色
                             borderRadius: 4,
                             barPercentage: 0.7
                         }
@@ -589,6 +619,9 @@
                                 callback: function(value) {
                                     return '$' + value.toLocaleString();
                                 }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.03)'
                             }
                         },
                         x: { grid: { display: false } }
@@ -596,7 +629,7 @@
                 }
             });
 
-            // 周期选择
+            // 周期选择交互
             document.getElementById('period-select').addEventListener('change', function() {
                 const months = parseInt(this.value);
                 monthlyChart.data.labels = months === 6 
@@ -605,13 +638,24 @@
                 monthlyChart.update();
             });
 
-            // 表单提交
+            // 表单提交处理
             document.getElementById('transaction-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const type = this.querySelector('input[name="transaction-type"]:checked').value;
                 const amount = this.querySelector('input[type="number"]').value;
                 alert(`Successfully ${type === 'deposit' ? 'deposited' : 'withdrawn'} $${parseFloat(amount).toFixed(2)}`);
                 this.reset();
+            });
+
+            // 搜索功能（与stocks.html统一）
+            const searchInput = document.querySelector('.header-search-input');
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = e.target.value.toLowerCase().trim();
+                    if (searchTerm) {
+                        alert(`Searching for: ${searchTerm}`);
+                    }
+                }
             });
         });
     </script>

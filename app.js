@@ -5,6 +5,7 @@ import express from 'express';
 import accountRouter from './src/routes/accountRoutes.js';
 import positionRoutes from './src/routes/positionRoutes.js';
 import assetListRoutes from './src/routes/assetListRoutes.js';
+import caashRoute from './src/routes/cashRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import './src/schedule/cron.js';
@@ -75,6 +76,7 @@ app.use('/assetList', assetListRoutes);
 
 // fetchData();
 
+app.use('/cash',caashRoute);
 
 
 app.listen(PORT, () => {
